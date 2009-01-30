@@ -16,7 +16,7 @@ require 'wx'
 class WingitFrame < Wx::Frame
   def initialize(title)
     # The main application frame has no parent (nil)
-    super(nil, :title => title, :size => [ 400, 300 ])
+    super(nil, :title => title, :size => [ 800, 600 ])
 
     # PNG can be used on all platforms, but icon type must be specified
     # to work on Windows. Note that OS X doesn't have "Frame" icons.
