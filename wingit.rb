@@ -60,9 +60,9 @@ class WingitFrame < Wx::Frame
   # Wx::MessageDialog here.
   def on_about
     Wx::about_box(:name => self.title,
-                   :version     => Wx::WXRUBY_VERSION,
-                   :description => "This is the minimal sample",
-                   :developers  => ['The wxRuby Development Team'] )
+                   :version     => @@app_verion,
+                   :description => "WxRuby-based git GUI",
+                   :developers  => ['tekkub - http://tekkub.github.com'] )
   end
 end
 
@@ -70,8 +70,9 @@ end
 # application, either define a subclass of Wx::App, create an instance,
 # and call its main_loop method, OR, simply call the Wx::App.run class
 # method, as shown here.
+@@app_verion = "0.1 Alpha"
 Wx::App.run do
   self.app_name = 'Wingit'
-  frame = WingitFrame.new("Wingit App")
+  frame = WingitFrame.new("Wingit")
   frame.show
 end
