@@ -1,38 +1,29 @@
 #!/usr/bin/env ruby
-# wxRuby2 Sample Code. Copyright (c) 2004-2008 wxRuby development team
-# Freely reusable code: see SAMPLES-LICENSE.TXT for details
+
 begin
   require 'rubygems'
 rescue LoadError
 end
 require 'wx'
 
-# This sample shows a fairly minimal Wx::App using a Frame, with a
-# MenuBar and StatusBar but no controls. For the absolute minimum app,
-# see nothing.rb
 
-# A Wx::Frame is a self-contained, top-level Window that can contain
-# controls, menubars, and statusbars
 class WingitFrame < Wx::Frame
   attr_accessor :app_verion
 
   def initialize(title, version)
-    # The main application frame has no parent (nil)
     super(nil, :title => title, :size => [ 800, 600 ])
 
     self.app_verion = version
 
-    # PNG can be used on all platforms, but icon type must be specified
-    # to work on Windows. Note that OS X doesn't have "Frame" icons.
+    # PNG can be used on all platforms, but icon type must be specified to work on Windows. Note that OS X doesn't have "Frame" icons.
     #~ icon_file = File.join( File.dirname(__FILE__), "mondrian.png")
     #~ self.icon = Wx::Icon.new(icon_file, Wx::BITMAP_TYPE_PNG)
 
     menu_bar = Wx::MenuBar.new
+
     # The "file" menu
     menu_file = Wx::Menu.new
-    # Using Wx::ID_EXIT standard id means the menu item will be given
-    # the right label for the platform and language, and placed in the
-    # correct platform-specific menu - eg on OS X, in the Application's menu
+    # Using Wx::ID_EXIT standard id means the menu item will be given the right label for the platform and language, and placed in the correct platform-specific menu - eg on OS X, in the Application's menu
     menu_file.append(Wx::ID_EXIT, "E&xit\tAlt-X", "Quit this program")
     menu_bar.append(menu_file, "&File")
 
@@ -53,24 +44,17 @@ class WingitFrame < Wx::Frame
     evt_menu Wx::ID_ABOUT, :on_about
   end
 
-  # End the application; it should finish automatically when the last
-  # window is closed.
+  # End the application; it should finish automatically when the last window is closed.
   def on_quit
     close()
   end
 
-  # show an 'About' dialog - WxRuby's about_box function will show a
-  # platform-native 'About' dialog, but you could also use an ordinary
-  # Wx::MessageDialog here.
   def on_about
     Wx::about_box(:name => self.title, :version => self.app_verion, :description => "WxRuby-based git GUI", :developers => ['tekkub - http://tekkub.github.com'])
   end
 end
 
-# Wx::App is the container class for any wxruby app. To start an
-# application, either define a subclass of Wx::App, create an instance,
-# and call its main_loop method, OR, simply call the Wx::App.run class
-# method, as shown here.
+
 Wx::App.run do
   self.app_name = 'Wingit'
   frame = WingitFrame.new("Wingit", "0.1 Alpha")
