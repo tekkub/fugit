@@ -14,9 +14,13 @@ require 'wx'
 # A Wx::Frame is a self-contained, top-level Window that can contain
 # controls, menubars, and statusbars
 class WingitFrame < Wx::Frame
-  def initialize(title)
+  attr_accessor :app_verion
+
+  def initialize(title, version)
     # The main application frame has no parent (nil)
     super(nil, :title => title, :size => [ 800, 600 ])
+
+    self.app_verion = version
 
     # PNG can be used on all platforms, but icon type must be specified
     # to work on Windows. Note that OS X doesn't have "Frame" icons.
@@ -59,10 +63,7 @@ class WingitFrame < Wx::Frame
   # platform-native 'About' dialog, but you could also use an ordinary
   # Wx::MessageDialog here.
   def on_about
-    Wx::about_box(:name => self.title,
-                   :version     => @@app_verion,
-                   :description => "WxRuby-based git GUI",
-                   :developers  => ['tekkub - http://tekkub.github.com'] )
+    Wx::about_box(:name => self.title, :version => self.app_verion, :description => "WxRuby-based git GUI", :developers => ['tekkub - http://tekkub.github.com'])
   end
 end
 
@@ -70,9 +71,8 @@ end
 # application, either define a subclass of Wx::App, create an instance,
 # and call its main_loop method, OR, simply call the Wx::App.run class
 # method, as shown here.
-@@app_verion = "0.1 Alpha"
 Wx::App.run do
   self.app_name = 'Wingit'
-  frame = WingitFrame.new("Wingit")
+  frame = WingitFrame.new("Wingit", "0.1 Alpha")
   frame.show
 end
