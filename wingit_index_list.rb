@@ -36,7 +36,8 @@ class WingitIndexList < Panel
 		modified.split("\n").each {|file| @unstaged.append(file + " (M)")}
 		staged.split("\n").each do |line|
 			(info, file) = line.split("\t")
-			@staged.append(file)
+			diff = `git diff --cached -- #{file}`
+			@staged.append(file) unless diff.empty?
 		end
 	end
 
