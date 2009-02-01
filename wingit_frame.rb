@@ -12,14 +12,8 @@ class WingitFrame < Wx::Frame
 		@mgr = Wx::AuiManager.new
 		@mgr.set_managed_window(self)
 
-		@notebook_style = Wx::AUI_NB_DEFAULT_STYLE|
-		Wx::AUI_NB_TAB_EXTERNAL_MOVE|Wx::NO_BORDER
-		@notebook_theme = 0
-		@pr_visible = true
-		#~ setup_menu
-		set_min_size( Wx::Size.new(400,300) )
+		set_min_size(Wx::Size.new(400,300))
 		setup_panes
-		#~ setup_events
 		@mgr.update
 
 		# PNG can be used on all platforms, but icon type must be specified to work on Windows. Note that OS X doesn't have "Frame" icons.
