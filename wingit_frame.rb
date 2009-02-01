@@ -1,5 +1,7 @@
 #~ include Wx
 
+require "wingit_console"
+
 class WingitFrame < Wx::Frame
 	attr_accessor :app_verion
 
@@ -54,24 +56,8 @@ class WingitFrame < Wx::Frame
 		@page_bmp = Wx::ArtProvider::get_bitmap(Wx::ART_NORMAL_FILE, Wx::ART_OTHER, Wx::Size.new(16,16))
 
 		pi = Wx::AuiPaneInfo.new
-		pi.set_name('tree_content').bottom
-		pi.set_layer(1).set_position(1)
-		@mgr.add_pane(create_console, pi)
-	end
-
-	def create_console
-		panel = Wx::Panel.new(self, Wx::ID_ANY)
-		@console = Wx::TextCtrl.new(panel, Wx::ID_ANY, nil, nil, Wx::Size.new(20, 20), Wx::TE_PROCESS_ENTER)
-		@output = Wx::TextCtrl.new(panel, Wx::ID_ANY, nil, nil, nil, Wx::NO_BORDER|Wx::TE_MULTILINE|Wx::TE_READONLY|Wx::TE_DONTWRAP)
-
-		box = Wx::BoxSizer.new(Wx::VERTICAL)
-		box.add(@output, 1, Wx::EXPAND)
-		box.add(@console, 0, Wx::EXPAND)
-		panel.set_sizer(box)
-
-		evt_text_enter(@console.get_id(), :on_run_command)
-
-		return panel
+		pi.set_name('tree_content').bottom.set_layer(1).set_position(1).set_best_size(Wx::Size.new(400, 100)).set_min_size(Wx::Size.new(400, 100))
+		@mgr.add_pane(WingitConsole.new(self), pi)
 	end
 
 
@@ -86,17 +72,6 @@ class WingitFrame < Wx::Frame
 
 	def on_about
 		Wx::about_box(:name => self.title, :version => self.app_verion, :description => "WxRuby-based git GUI", :developers => ['tekkub - http://tekkub.github.com'])
-	end
-
-	def on_run_command(event)
-		cmd = @console.get_value
-		begin
-			result = IO.popen(cmd).readlines
-			@output.append_text("> #{cmd}\n#{result}\n")
-		rescue
-			@output.append_text("> #{cmd}\nThere was an error running the command\n")
-		end
-		@console.clear
 	end
 
 end
