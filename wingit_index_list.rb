@@ -1,7 +1,7 @@
 include Wx
 
 class WingitIndexList < Panel
-	attr_accessor :unstaged, :staged
+	attr_accessor :unstaged, :staged, :diff
 
 	def initialize(parent)
 		super(parent, ID_ANY)
@@ -14,6 +14,8 @@ class WingitIndexList < Panel
 		box.add(@staged, 1, EXPAND)
 		self.set_sizer(box)
 
+		evt_listbox(@unstaged.get_id, :on_unstaged_click)
+		evt_listbox(@staged.get_id, :on_staged_click)
 		evt_listbox_dclick(@unstaged.get_id, :on_unstaged_double_click)
 		evt_listbox_dclick(@staged.get_id, :on_staged_double_click)
 
@@ -36,6 +38,35 @@ class WingitIndexList < Panel
 			(info, file) = line.split("\t")
 			@staged.append(file)
 		end
+	end
+
+	def on_unstaged_click(event)
+		@staged.deselect(-1) # Clear the other box's selection
+
+		i = event.get_index
+		file = @unstaged.get_string(i)
+		(all, file, change) = file.match(/\A(.+) \((.)\)\Z/).to_a
+
+		case change
+		when "N"
+			val = `cat #{file}`
+		when "M"
+			val = `git diff -- #{file}`
+		else
+			val = ""
+		end
+
+		@diff.change_value(val)
+	end
+
+	def on_staged_click(event)
+		@unstaged.deselect(-1) # Clear the other box's selection
+
+		i = event.get_index
+		file = @staged.get_string(i)
+
+		val = `git diff --cached -- #{file}`
+		@diff.change_value(val)
 	end
 
 	def on_unstaged_double_click(event)

@@ -1,6 +1,7 @@
 #~ include Wx
 
 require "wingit_console"
+require "wingit_diff"
 require "wingit_index_list"
 
 class WingitFrame < Wx::Frame
@@ -62,7 +63,16 @@ class WingitFrame < Wx::Frame
 		pi = Wx::AuiPaneInfo.new
 		size = Wx::Size.new(200, 350)
 		pi.left.set_name('index').set_caption("Index").set_layer(1).set_position(1).set_best_size(size).set_min_size(size).set_floating_size(size)
-		@mgr.add_pane(WingitIndexList.new(self), pi)
+		index = WingitIndexList.new(self)
+		@mgr.add_pane(index, pi)
+
+		pi = Wx::AuiPaneInfo.new
+		size = Wx::Size.new(200, 350)
+		pi.center_pane.set_name('diff')
+		diff = WingitDiff.new(self)
+		@mgr.add_pane(diff, pi)
+
+		index.diff = diff
 	end
 
 
