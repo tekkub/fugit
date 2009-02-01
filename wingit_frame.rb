@@ -85,31 +85,3 @@ class WingitFrame < Wx::Frame
 		Wx::about_box(:name => self.title, :version => self.app_verion, :description => "WxRuby-based git GUI", :developers => ['tekkub - http://tekkub.github.com'])
 	end
 end
-
-
-#~ require 'yaml'
-#~ require 'lexer.rb'
-#~ require 'scintilla.rb'
-#~ require 'treectrl.rb'
-
-#~ Minimal_Quit = 1
-#~ Minimal_About = ID_ABOUT
-#~ Toggle_Whitespace = 5000
-#~ Toggle_EOL = 5001
-
-#~ class AuiFrame < Wx::Frame
-	#~ def initialize(*args)
-		#~ super
-		#~ @mgr = Wx::AuiManager.new
-		#~ @mgr.set_managed_window(self)
-
-		#~ @notebook_style = Wx::AUI_NB_DEFAULT_STYLE|
-			#~ Wx::AUI_NB_TAB_EXTERNAL_MOVE|Wx::NO_BORDER
-		#~ @notebook_theme = 0
-		#~ @pr_visible = true
-		#~ setup_menu
-		#~ set_min_size( Wx::Size.new(400,300) )
-		#~ setup_panes
-		#~ setup_events
-		#~ @mgr.update
-	#~ end
