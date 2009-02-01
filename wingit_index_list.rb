@@ -76,18 +76,16 @@ class WingitIndexList < Panel
 
 
 	def on_unstaged_double_click(event)
-		i = event.get_index
-		(file, change) = @unstaged.get_item_data(i)
-		@staged.append(file)
-		@unstaged.delete(i)
+		(file, change) = @unstaged.get_item_data(event.get_index)
+		`git add #{file}`
+		update
 	end
 
 
 	def on_staged_double_click(event)
-		i = event.get_index
-		file = @staged.get_string(i)
-		@unstaged.append(file)
-		@staged.delete(i)
+		file = @staged.get_string(event.get_index)
+		`git reset #{file}`
+		update
 	end
 
 end
