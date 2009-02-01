@@ -16,7 +16,6 @@ class WingitFrame < Wx::Frame
 
 		set_min_size(Wx::Size.new(400,300))
 		setup_panes
-		@mgr.update
 
 		# PNG can be used on all platforms, but icon type must be specified to work on Windows. Note that OS X doesn't have "Frame" icons.
 		#~ icon_file = File.join( File.dirname(__FILE__), "mondrian.png")
@@ -42,9 +41,10 @@ class WingitFrame < Wx::Frame
 		create_status_bar(2)
 		self.status_text = "Welcome to Wingit!"
 
-		# Set it up to handle menu events using the relevant methods.
-		evt_menu Wx::ID_EXIT, :on_quit
-		evt_menu Wx::ID_ABOUT, :on_about
+		evt_menu(Wx::ID_EXIT, :on_quit)
+		evt_menu(Wx::ID_ABOUT, :on_about)
+
+		@mgr.update
 	end
 
 
