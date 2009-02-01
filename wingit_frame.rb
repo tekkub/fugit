@@ -53,8 +53,6 @@ class WingitFrame < Wx::Frame
 	#####################
 
 	def setup_panes
-		@page_bmp = Wx::ArtProvider::get_bitmap(Wx::ART_NORMAL_FILE, Wx::ART_OTHER, Wx::Size.new(16,16))
-
 		pi = Wx::AuiPaneInfo.new
 		pi.set_name('tree_content').bottom.set_layer(1).set_position(1).set_best_size(Wx::Size.new(400, 100)).set_min_size(Wx::Size.new(400, 100))
 		@mgr.add_pane(WingitConsole.new(self), pi)
