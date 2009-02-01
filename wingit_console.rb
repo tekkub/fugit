@@ -6,8 +6,8 @@ class WingitConsole < Panel
 	def initialize(parent)
 		super(parent, ID_ANY)
 
-		@output = TextCtrl.new(self, ID_ANY, nil, nil, Size.new(20, 20), NO_BORDER|TE_MULTILINE|TE_READONLY|TE_DONTWRAP)
 		@input = TextCtrl.new(self, ID_ANY, nil, nil, Size.new(20, 20), TE_PROCESS_ENTER)
+		@output = TextCtrl.new(self, ID_ANY, nil, nil, Size.new(20, 20), NO_BORDER|TE_MULTILINE|TE_READONLY|TE_DONTWRAP)
 
 		box = BoxSizer.new(VERTICAL)
 		box.add(@output, 1, EXPAND)
