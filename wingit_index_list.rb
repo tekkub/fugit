@@ -1,7 +1,9 @@
 include Wx
 
 class WingitIndexList < Panel
+
 	attr_accessor :unstaged, :staged, :diff
+
 
 	def initialize(parent)
 		super(parent, ID_ANY)
@@ -22,6 +24,7 @@ class WingitIndexList < Panel
 		update
 	end
 
+
 	def update()
 		others = `git ls-files --others --exclude-standard`
 		deleted = `git ls-files --deleted`
@@ -40,6 +43,7 @@ class WingitIndexList < Panel
 			@staged.append(file) unless diff.empty?
 		end
 	end
+
 
 	def on_unstaged_click(event)
 		@staged.deselect(-1) # Clear the other box's selection
@@ -60,6 +64,7 @@ class WingitIndexList < Panel
 		@diff.change_value(val)
 	end
 
+
 	def on_staged_click(event)
 		@unstaged.deselect(-1) # Clear the other box's selection
 
@@ -70,12 +75,14 @@ class WingitIndexList < Panel
 		@diff.change_value(val)
 	end
 
+
 	def on_unstaged_double_click(event)
 		i = event.get_index
 		file = @unstaged.get_string(i)
 		@staged.append(file)
 		@unstaged.delete(i)
 	end
+
 
 	def on_staged_double_click(event)
 		i = event.get_index
