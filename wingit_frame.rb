@@ -1,6 +1,7 @@
 #~ include Wx
 
 require "wingit_console"
+require "wingit_index_list"
 
 class WingitFrame < Wx::Frame
 	attr_accessor :app_verion
@@ -57,6 +58,11 @@ class WingitFrame < Wx::Frame
 		size = Wx::Size.new(800, 150)
 		pi.bottom.set_name('console').set_caption("Console").set_layer(1).set_position(1).set_best_size(size).set_min_size(size).set_floating_size(size)
 		@mgr.add_pane(WingitConsole.new(self), pi)
+
+		pi = Wx::AuiPaneInfo.new
+		size = Wx::Size.new(200, 350)
+		pi.left.set_name('index').set_caption("Index").set_layer(1).set_position(1).set_best_size(size).set_min_size(size).set_floating_size(size)
+		@mgr.add_pane(WingitIndexList.new(self), pi)
 	end
 
 
