@@ -1,47 +1,90 @@
+#~ include Wx
 
 class WingitFrame < Wx::Frame
-  attr_accessor :app_verion
+	attr_accessor :app_verion
 
-  def initialize(title, version)
-    super(nil, :title => title, :size => [ 800, 600 ])
+	def initialize(title, version)
+		super(nil, :title => title, :size => [ 800, 600 ])
 
-    self.app_verion = version
+		self.app_verion = version
 
-    # PNG can be used on all platforms, but icon type must be specified to work on Windows. Note that OS X doesn't have "Frame" icons.
-    #~ icon_file = File.join( File.dirname(__FILE__), "mondrian.png")
-    #~ self.icon = Wx::Icon.new(icon_file, Wx::BITMAP_TYPE_PNG)
+		# Set up our AUI manager
+		@mgr = Wx::AuiManager.new
+		@mgr.set_managed_window(self)
 
-    menu_bar = Wx::MenuBar.new
+		@notebook_style = Wx::AUI_NB_DEFAULT_STYLE|
+		Wx::AUI_NB_TAB_EXTERNAL_MOVE|Wx::NO_BORDER
+		@notebook_theme = 0
+		@pr_visible = true
+		#~ setup_menu
+		set_min_size( Wx::Size.new(400,300) )
+		#~ setup_panes
+		#~ setup_events
+		@mgr.update
 
-    # The "file" menu
-    menu_file = Wx::Menu.new
-    # Using Wx::ID_EXIT standard id means the menu item will be given the right label for the platform and language, and placed in the correct platform-specific menu - eg on OS X, in the Application's menu
-    menu_file.append(Wx::ID_EXIT, "E&xit\tAlt-X", "Quit this program")
-    menu_bar.append(menu_file, "&File")
+		# PNG can be used on all platforms, but icon type must be specified to work on Windows. Note that OS X doesn't have "Frame" icons.
+		#~ icon_file = File.join( File.dirname(__FILE__), "mondrian.png")
+		#~ self.icon = Wx::Icon.new(icon_file, Wx::BITMAP_TYPE_PNG)
 
-    # The "help" menu
-    menu_help = Wx::Menu.new
-    menu_help.append(Wx::ID_ABOUT, "&About...\tF1", "Show about dialog")
-    menu_bar.append(menu_help, "&Help")
+		menu_bar = Wx::MenuBar.new
 
-    # Assign the menubar to this frame
-    self.menu_bar = menu_bar
+		# The "file" menu
+		menu_file = Wx::Menu.new
+		# Using Wx::ID_EXIT standard id means the menu item will be given the right label for the platform and language, and placed in the correct platform-specific menu - eg on OS X, in the Application's menu
+		menu_file.append(Wx::ID_EXIT, "E&xit\tAlt-X", "Quit this program")
+		menu_bar.append(menu_file, "&File")
 
-    # Create a status bar at the bottom of the frame
-    create_status_bar(2)
-    self.status_text = "Welcome to Wingit!"
+		# The "help" menu
+		menu_help = Wx::Menu.new
+		menu_help.append(Wx::ID_ABOUT, "&About...\tF1", "Show about dialog")
+		menu_bar.append(menu_help, "&Help")
 
-    # Set it up to handle menu events using the relevant methods.
-    evt_menu Wx::ID_EXIT, :on_quit
-    evt_menu Wx::ID_ABOUT, :on_about
-  end
+		# Assign the menubar to this frame
+		self.menu_bar = menu_bar
 
-  # End the application; it should finish automatically when the last window is closed.
-  def on_quit
-    close()
-  end
+		# Create a status bar at the bottom of the frame
+		create_status_bar(2)
+		self.status_text = "Welcome to Wingit!"
 
-  def on_about
-    Wx::about_box(:name => self.title, :version => self.app_verion, :description => "WxRuby-based git GUI", :developers => ['tekkub - http://tekkub.github.com'])
-  end
+		# Set it up to handle menu events using the relevant methods.
+		evt_menu Wx::ID_EXIT, :on_quit
+		evt_menu Wx::ID_ABOUT, :on_about
+	end
+
+	# End the application; it should finish automatically when the last window is closed.
+	def on_quit
+		close()
+	end
+
+	def on_about
+		Wx::about_box(:name => self.title, :version => self.app_verion, :description => "WxRuby-based git GUI", :developers => ['tekkub - http://tekkub.github.com'])
+	end
 end
+
+
+#~ require 'yaml'
+#~ require 'lexer.rb'
+#~ require 'scintilla.rb'
+#~ require 'treectrl.rb'
+
+#~ Minimal_Quit = 1
+#~ Minimal_About = ID_ABOUT
+#~ Toggle_Whitespace = 5000
+#~ Toggle_EOL = 5001
+
+#~ class AuiFrame < Wx::Frame
+	#~ def initialize(*args)
+		#~ super
+		#~ @mgr = Wx::AuiManager.new
+		#~ @mgr.set_managed_window(self)
+
+		#~ @notebook_style = Wx::AUI_NB_DEFAULT_STYLE|
+			#~ Wx::AUI_NB_TAB_EXTERNAL_MOVE|Wx::NO_BORDER
+		#~ @notebook_theme = 0
+		#~ @pr_visible = true
+		#~ setup_menu
+		#~ set_min_size( Wx::Size.new(400,300) )
+		#~ setup_panes
+		#~ setup_events
+		#~ @mgr.update
+	#~ end
