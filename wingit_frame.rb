@@ -18,7 +18,7 @@ class WingitFrame < Wx::Frame
 		@pr_visible = true
 		#~ setup_menu
 		set_min_size( Wx::Size.new(400,300) )
-		#~ setup_panes
+		setup_panes
 		#~ setup_events
 		@mgr.update
 
@@ -50,6 +50,37 @@ class WingitFrame < Wx::Frame
 		evt_menu Wx::ID_EXIT, :on_quit
 		evt_menu Wx::ID_ABOUT, :on_about
 	end
+
+
+	#####################
+	##      Setup      ##
+	#####################
+
+	def setup_panes
+		@page_bmp = Wx::ArtProvider::get_bitmap(Wx::ART_NORMAL_FILE, Wx::ART_OTHER, Wx::Size.new(16,16))
+
+		pi = Wx::AuiPaneInfo.new
+		pi.set_name('tree_content').bottom
+		pi.set_layer(1).set_position(1)
+		@mgr.add_pane(create_console, pi)
+	end
+
+	def create_console
+		panel = Wx::Panel.new(self, Wx::ID_ANY)
+		@output = Wx::TextCtrl.new(panel, Wx::ID_ANY, nil, nil, nil, Wx::NO_BORDER|Wx::TE_MULTILINE|Wx::TE_READONLY|Wx::TE_DONTWRAP)
+		@console = Wx::TextCtrl.new(panel, Wx::ID_ANY, nil, nil, Wx::Size.new(20, 20))
+
+		box = Wx::BoxSizer.new(Wx::VERTICAL)
+		box.add(@output, 1, Wx::EXPAND)
+		box.add(@console, 0, Wx::EXPAND)
+		panel.set_sizer(box)
+		return panel
+	end
+
+
+	######################
+	##      Events      ##
+	######################
 
 	# End the application; it should finish automatically when the last window is closed.
 	def on_quit
