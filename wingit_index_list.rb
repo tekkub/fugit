@@ -34,9 +34,9 @@ class WingitIndexList < Panel
 		@unstaged.clear
 		@staged.clear
 
-		others.split("\n").each {|file| @unstaged.append(file + " (N)")}
-		deleted.split("\n").each {|file| @unstaged.append(file + " (D)")}
-		modified.split("\n").each {|file| @unstaged.append(file + " (M)")}
+		others.split("\n").each {|file| @unstaged.append(file + " (N)", [file, "N"])}
+		deleted.split("\n").each {|file| @unstaged.append(file + " (D)", [file, "D"])}
+		modified.split("\n").each {|file| @unstaged.append(file + " (M)", [file, "M"])}
 		staged.split("\n").each do |line|
 			(info, file) = line.split("\t")
 			diff = `git diff --cached -- #{file}`
@@ -49,8 +49,7 @@ class WingitIndexList < Panel
 		@staged.deselect(-1) # Clear the other box's selection
 
 		i = event.get_index
-		file = @unstaged.get_string(i)
-		(all, file, change) = file.match(/\A(.+) \((.)\)\Z/).to_a
+		(file, change) = @unstaged.get_item_data(i)
 
 		case change
 		when "N"
@@ -78,7 +77,7 @@ class WingitIndexList < Panel
 
 	def on_unstaged_double_click(event)
 		i = event.get_index
-		file = @unstaged.get_string(i)
+		(file, change) = @unstaged.get_item_data(i)
 		@staged.append(file)
 		@unstaged.delete(i)
 	end
