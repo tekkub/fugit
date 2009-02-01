@@ -17,8 +17,25 @@ class WingitIndexList < Panel
 		evt_listbox_dclick(@unstaged.get_id, :on_unstaged_double_click)
 		evt_listbox_dclick(@staged.get_id, :on_staged_double_click)
 
-		file_list = Dir.glob("**/*")
-		file_list.each {|file| @unstaged.append(file)}
+		update
+	end
+
+	def update()
+		others = `git ls-files --others --exclude-standard`
+		deleted = `git ls-files --deleted`
+		modified = `git ls-files --modified`
+		staged = `git ls-files --stage`
+
+		@unstaged.clear
+		@staged.clear
+
+		others.split("\n").each {|file| @unstaged.append(file + " (N)")}
+		deleted.split("\n").each {|file| @unstaged.append(file + " (D)")}
+		modified.split("\n").each {|file| @unstaged.append(file + " (M)")}
+		staged.split("\n").each do |line|
+			(info, file) = line.split("\t")
+			@staged.append(file)
+		end
 	end
 
 	def on_unstaged_double_click(event)
