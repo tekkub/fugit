@@ -54,13 +54,13 @@ class WingitIndexList < Panel
 		case change
 		when "N"
 			val = `cat #{file}`
+			@diff.change_value(val)
 		when "M"
 			val = `git diff -- #{file}`
+			@diff.set_diff(val)
 		else
-			val = ""
+			@diff.set_diff("")
 		end
-
-		@diff.change_value(val)
 	end
 
 
@@ -71,7 +71,7 @@ class WingitIndexList < Panel
 		file = @staged.get_string(i)
 
 		val = `git diff --cached -- #{file}`
-		@diff.change_value(val)
+		@diff.set_diff(val)
 	end
 
 
