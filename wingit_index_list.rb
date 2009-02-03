@@ -56,7 +56,7 @@ class WingitIndexList < Panel
 		when "N"
 			val = `cat #{file}`
 			@diff.change_value(val)
-		when "M"
+		when "M", "D"
 			val = `git diff -- #{file}`
 			@diff.set_diff(val)
 		else
