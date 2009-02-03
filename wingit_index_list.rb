@@ -59,7 +59,7 @@ class WingitIndexList < Panel
 			val = `git diff -- #{file}`
 			@diff.set_diff(val)
 		else
-			@diff.set_diff("")
+			@diff.clear
 		end
 	end
 
@@ -76,6 +76,7 @@ class WingitIndexList < Panel
 
 
 	def on_unstaged_double_click(event)
+		@diff.clear
 		(file, change) = @unstaged.get_item_data(event.get_index)
 		`git add #{file}`
 		update
@@ -83,6 +84,7 @@ class WingitIndexList < Panel
 
 
 	def on_staged_double_click(event)
+		@diff.clear
 		file = @staged.get_string(event.get_index)
 		`git reset #{file}`
 		update

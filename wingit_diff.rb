@@ -33,6 +33,10 @@ class WingitDiff < StyledTextCtrl
 		self.write_value(value)
 	end
 
+	def clear
+		self.write_value("")
+	end
+
 	def change_value(value)
 		self.set_lexer(0)
 		self.write_value(value)
