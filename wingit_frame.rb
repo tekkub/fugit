@@ -39,10 +39,6 @@ class WingitFrame < Wx::Frame
 		# Assign the menubar to this frame
 		self.menu_bar = menu_bar
 
-		# Create a status bar at the bottom of the frame
-		create_status_bar(2)
-		self.status_text = "Welcome to Wingit!"
-
 		evt_menu(Wx::ID_EXIT, :on_quit)
 		evt_menu(Wx::ID_ABOUT, :on_about)
 
