@@ -61,7 +61,7 @@ class WingitFrame < Wx::Frame
 		@mgr.add_pane(WingitConsole.new(self), pi)
 
 		pi = Wx::AuiPaneInfo.new
-		size = Wx::Size.new(200, 350)
+		size = Wx::Size.new(150, 350)
 		pi.left.set_name('index').set_caption("Index").set_layer(1).set_position(1).set_best_size(size).set_min_size(size).set_floating_size(size)
 		index = WingitIndexList.new(self)
 		@mgr.add_pane(index, pi)
