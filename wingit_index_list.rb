@@ -79,7 +79,12 @@ class WingitIndexList < Panel
 	def on_unstaged_double_click(event)
 		@diff.clear
 		(file, change) = @unstaged.get_item_data(event.get_index)
-		`git add #{file}`
+		case change
+		when "D"
+			`git rm --cached #{file}`
+		else
+			`git add #{file}`
+		end
 		update
 	end
 
