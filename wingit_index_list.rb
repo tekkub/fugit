@@ -34,9 +34,10 @@ class WingitIndexList < Panel
 		@unstaged.clear
 		@staged.clear
 
+		deleted = deleted.split("\n")
+		deleted.each {|file| @unstaged.append(file + " (D)", [file, "D"])}
 		others.split("\n").each {|file| @unstaged.append(file + " (N)", [file, "N"])}
-		deleted.split("\n").each {|file| @unstaged.append(file + " (D)", [file, "D"])}
-		modified.split("\n").each {|file| @unstaged.append(file + " (M)", [file, "M"])}
+		modified.split("\n").each {|file| @unstaged.append(file + " (M)", [file, "M"]) unless deleted.include?(file)}
 		staged.split("\n").each do |line|
 			(info, file) = line.split("\t")
 			diff = `git diff --cached -- #{file}`
