@@ -8,8 +8,8 @@ class WingitIndexList < Panel
 	def initialize(parent)
 		super(parent, ID_ANY)
 
-		@unstaged = ListBox.new(self, ID_ANY, nil, nil, nil, LB_EXTENDED)
-		@staged = ListBox.new(self, ID_ANY, nil, nil, nil, LB_EXTENDED)
+		@unstaged = ListBox.new(self, ID_ANY, nil, nil, nil, LB_EXTENDED|LB_SORT)
+		@staged = ListBox.new(self, ID_ANY, nil, nil, nil, LB_EXTENDED|LB_SORT)
 
 		box = BoxSizer.new(VERTICAL)
 		box.add(@unstaged, 1, EXPAND)
