@@ -1,5 +1,6 @@
 #~ include Wx
 
+require "wingit_commit"
 require "wingit_console"
 require "wingit_diff"
 require "wingit_index_list"
@@ -52,13 +53,18 @@ class WingitFrame < Wx::Frame
 
 	def setup_panes
 		pi = Wx::AuiPaneInfo.new
-		size = Wx::Size.new(800, 75)
-		pi.bottom.set_name('console').set_caption("Console").set_layer(1).set_position(1).set_best_size(size).set_min_size(size).set_floating_size(size).set_maximize_button.set_minimize_button
-		@mgr.add_pane(WingitConsole.new(self), pi)
+		size = Wx::Size.new(800, 150)
+		pi.bottom.set_name('commit').set_caption("Commit").set_layer(1).set_position(1).set_best_size(size).set_min_size(size).set_floating_size(size).set_maximize_button.set_minimize_button
+		@mgr.add_pane(WingitCommit.new(self), pi)
+
+		#~ pi = Wx::AuiPaneInfo.new
+		#~ size = Wx::Size.new(800, 75)
+		#~ pi.bottom.set_name('console').set_caption("Console").set_layer(3).set_position(1).set_best_size(size).set_min_size(size).set_floating_size(size).set_maximize_button.set_minimize_button
+		#~ @mgr.add_pane(WingitConsole.new(self), pi)
 
 		pi = Wx::AuiPaneInfo.new
 		size = Wx::Size.new(150, 350)
-		pi.left.set_name('index').set_caption("Index").set_layer(1).set_position(1).set_best_size(size).set_min_size(size).set_floating_size(size)
+		pi.left.set_name('index').set_caption("Index").set_layer(2).set_position(1).set_best_size(size).set_min_size(size).set_floating_size(size)
 		index = WingitIndexList.new(self)
 		@mgr.add_pane(index, pi)
 
