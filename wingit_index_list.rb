@@ -1,4 +1,5 @@
 include Wx
+include IconLoader
 
 class WingitIndexList < Panel
 
@@ -11,6 +12,15 @@ class WingitIndexList < Panel
 		@unstaged = ListBox.new(self, ID_ANY, nil, nil, nil, LB_EXTENDED|LB_SORT)
 		@staged = ListBox.new(self, ID_ANY, nil, nil, nil, LB_EXTENDED|LB_SORT)
 
+		@toolbar = ToolBar.new(self, ID_ANY, nil, nil, TB_HORIZONTAL|NO_BORDER|TB_NODIVIDER)
+		@toolbar.set_tool_bitmap_size(Size.new(16,16))
+		@toolbar.add_tool(101, "Stage all", get_icon("folder_add.png"), "Stage all")
+		@toolbar.add_tool(102, "Stage", get_icon("page_add.png"), "Stage file")
+		@toolbar.add_separator
+		@toolbar.add_tool(103, "Unstage", get_icon("page_delete.png"), "Unstage file")
+		@toolbar.add_tool(104, "Unstage all", get_icon("folder_delete.png"), "Unstage all")
+		@toolbar.realize
+
 		unstaged_label = StaticText.new(self, ID_ANY, "Unstaged")
 		staged_label = StaticText.new(self, ID_ANY, "Staged to commit")
 		unstaged_label.set_background_colour(Colour.new(255, 192, 192))
@@ -19,6 +29,7 @@ class WingitIndexList < Panel
 		box = BoxSizer.new(VERTICAL)
 		box.add(unstaged_label, 0, EXPAND)
 		box.add(@unstaged, 1, EXPAND)
+		box.add(@toolbar, 0, ALIGN_CENTER_HORIZONTAL)
 		box.add(staged_label, 0, EXPAND)
 		box.add(@staged, 1, EXPAND)
 		self.set_sizer(box)
