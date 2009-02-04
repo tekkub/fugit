@@ -48,7 +48,7 @@ class WingitFrame < Wx::Frame
 	def setup_panes
 		pi = Wx::AuiPaneInfo.new
 		size = Wx::Size.new(800, 150)
-		pi.bottom.set_name('commit').set_caption("Commit").set_layer(1).set_position(1).set_best_size(size).set_min_size(size).set_floating_size(size).set_maximize_button.set_minimize_button
+		pi.bottom.set_name('commit').set_caption("Commit").set_layer(1).set_position(1).set_best_size(size).set_min_size(size).set_floating_size(size)
 		@mgr.add_pane(WingitCommit.new(self), pi)
 
 		#~ pi = Wx::AuiPaneInfo.new
