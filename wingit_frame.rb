@@ -15,9 +15,8 @@ class WingitFrame < Wx::Frame
 		set_min_size(Wx::Size.new(400,300))
 		setup_panes
 
-		# PNG can be used on all platforms, but icon type must be specified to work on Windows. Note that OS X doesn't have "Frame" icons.
-		#~ icon_file = File.join( File.dirname(__FILE__), "mondrian.png")
-		#~ self.icon = Wx::Icon.new(icon_file, Wx::BITMAP_TYPE_PNG)
+		icon_file = File.join(File.dirname(__FILE__), "icons", "plus_minus.gif")
+		self.icon = Wx::Icon.new(icon_file, Wx::BITMAP_TYPE_GIF)
 
 		menu_bar = Wx::MenuBar.new
 
