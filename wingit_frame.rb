@@ -1,7 +1,7 @@
 #~ include Wx
 
 class WingitFrame < Wx::Frame
-	attr_accessor :app_verion
+	attr_accessor :app_verion, :index, :commit, :diff
 
 	def initialize(title, version)
 		super(nil, :title => title, :size => [ 800, 600 ])
@@ -23,6 +23,7 @@ class WingitFrame < Wx::Frame
 		# The "file" menu
 		menu_file = Wx::Menu.new
 		# Using Wx::ID_EXIT standard id means the menu item will be given the right label for the platform and language, and placed in the correct platform-specific menu - eg on OS X, in the Application's menu
+		refresh = menu_file.append(Wx::ID_ANY, "Refresh\tF5", "Refresh the index list")
 		menu_file.append(Wx::ID_EXIT, "E&xit\tAlt-X", "Quit this program")
 		menu_bar.append(menu_file, "&File")
 
@@ -34,6 +35,7 @@ class WingitFrame < Wx::Frame
 		# Assign the menubar to this frame
 		self.menu_bar = menu_bar
 
+		evt_menu(refresh) {|event| update}
 		evt_menu(Wx::ID_EXIT, :on_quit)
 		evt_menu(Wx::ID_ABOUT, :on_about)
 
@@ -49,7 +51,8 @@ class WingitFrame < Wx::Frame
 		pi = Wx::AuiPaneInfo.new
 		size = Wx::Size.new(800, 150)
 		pi.bottom.set_name('commit').set_caption("Commit").set_layer(1).set_position(1).set_best_size(size).set_min_size(size).set_floating_size(size)
-		@mgr.add_pane(WingitCommit.new(self), pi)
+		@commit = WingitCommit.new(self)
+		@mgr.add_pane(@commit, pi)
 
 		#~ pi = Wx::AuiPaneInfo.new
 		#~ size = Wx::Size.new(800, 75)
@@ -59,16 +62,20 @@ class WingitFrame < Wx::Frame
 		pi = Wx::AuiPaneInfo.new
 		size = Wx::Size.new(150, 350)
 		pi.left.set_name('index').set_caption("Index").set_layer(2).set_position(1).set_best_size(size).set_min_size(size).set_floating_size(size)
-		index = WingitIndexList.new(self)
-		@mgr.add_pane(index, pi)
+		@index = WingitIndexList.new(self)
+		@mgr.add_pane(@index, pi)
 
 		pi = Wx::AuiPaneInfo.new
 		size = Wx::Size.new(200, 350)
 		pi.center_pane.set_name('diff')
-		diff = WingitDiff.new(self)
-		@mgr.add_pane(diff, pi)
+		@diff = WingitDiff.new(self)
+		@mgr.add_pane(@diff, pi)
+	end
 
-		index.diff = diff
+
+	def update()
+		@index.update
+		@commit.update
 	end
 
 

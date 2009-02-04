@@ -39,14 +39,15 @@ class WingitCommit < Panel
 
 		evt_tool(101, :on_commit_clicked)
 
-		setCommitter
+		update
 	end
 
-	def setCommitter
+	def update
 		name = `git config user.name`
 		email = `git config user.email`
 		@committer.set_value("#{name.chomp} <#{email.chomp}>")
 		@author.set_value("#{name.chomp} <#{email.chomp}>")
+		@input.set_value("")
 	end
 
 	def on_commit_clicked
@@ -57,6 +58,7 @@ class WingitCommit < Panel
 		else
 			File.open(File.join(Dir.pwd, ".git", "wingit_commit.txt"), "w") {|f| f << msg}
 			`git commit --file=.git/wingit_commit.txt --author="#{@author.get_value}"`
+			self.get_parent.update
 		end
 	end
 

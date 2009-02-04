@@ -65,6 +65,7 @@ class WingitIndexList < Panel
 
 
 	def on_unstaged_click(event)
+		@diff ||= self.get_parent.diff
 		@staged.deselect(-1) # Clear the other box's selection
 
 		i = event.get_index
@@ -84,6 +85,7 @@ class WingitIndexList < Panel
 
 
 	def on_staged_click(event)
+		@diff ||= self.get_parent.diff
 		@unstaged.deselect(-1) # Clear the other box's selection
 
 		i = event.get_index
