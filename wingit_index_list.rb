@@ -11,8 +11,15 @@ class WingitIndexList < Panel
 		@unstaged = ListBox.new(self, ID_ANY, nil, nil, nil, LB_EXTENDED|LB_SORT)
 		@staged = ListBox.new(self, ID_ANY, nil, nil, nil, LB_EXTENDED|LB_SORT)
 
+		unstaged_label = StaticText.new(self, ID_ANY, "Unstaged")
+		staged_label = StaticText.new(self, ID_ANY, "Staged to commit")
+		unstaged_label.set_background_colour(Colour.new(255, 192, 192))
+		staged_label.set_background_colour(Colour.new(128, 255, 128))
+
 		box = BoxSizer.new(VERTICAL)
+		box.add(unstaged_label, 0, EXPAND)
 		box.add(@unstaged, 1, EXPAND)
+		box.add(staged_label, 0, EXPAND)
 		box.add(@staged, 1, EXPAND)
 		self.set_sizer(box)
 
