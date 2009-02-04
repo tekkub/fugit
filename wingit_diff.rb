@@ -28,7 +28,9 @@ class WingitDiff < StyledTextCtrl
 	end
 
 	def set_diff(value)
-		value = value.split("\n")[4..-1].join("\n")
+		value.gsub!(/[+-]{3} [ab]\/[^\n]+\n/, "")
+		value.gsub!(/\nindex [a-fA-F0-9]{7}\.\.[a-fA-F0-9]{7}[^\n]*/, "")
+		value.gsub!(/\Adiff[^\n]+\n/, "")
 		self.set_lexer(STC_LEX_DIFF)
 		self.write_value(value)
 	end
