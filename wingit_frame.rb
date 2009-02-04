@@ -23,7 +23,8 @@ class WingitFrame < Wx::Frame
 		# The "file" menu
 		menu_file = Wx::Menu.new
 		# Using Wx::ID_EXIT standard id means the menu item will be given the right label for the platform and language, and placed in the correct platform-specific menu - eg on OS X, in the Application's menu
-		refresh = menu_file.append(Wx::ID_ANY, "Refresh\tF5", "Refresh the index list")
+		menu_file.append(Wx::ID_SAVE, "&Save commit\tCtrl-S", "Save commit")
+		refresh = menu_file.append(Wx::ID_ANY, "&Refresh\tF5", "Refresh the index list")
 		menu_file.append(Wx::ID_EXIT, "E&xit\tAlt-X", "Quit this program")
 		menu_bar.append(menu_file, "&File")
 
@@ -35,6 +36,7 @@ class WingitFrame < Wx::Frame
 		# Assign the menubar to this frame
 		self.menu_bar = menu_bar
 
+		evt_menu(Wx::ID_SAVE) {|event| @commit.on_commit_clicked}
 		evt_menu(refresh) {|event| update}
 		evt_menu(Wx::ID_EXIT, :on_quit)
 		evt_menu(Wx::ID_ABOUT, :on_about)
