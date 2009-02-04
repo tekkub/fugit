@@ -55,6 +55,9 @@ class WingitCommit < Panel
 		if msg.empty?
 			@no_msg_error ||= MessageDialog.new(self, "Please enter a commit message.", "Commit error", OK|ICON_ERROR)
 			@no_msg_error.show_modal
+		elsif self.get_parent.index.staged.get_count == 0
+			@nothing_to_commit_error ||= MessageDialog.new(self, "No changes are staged to commit.", "Commit error", OK|ICON_ERROR)
+			@nothing_to_commit_error.show_modal
 		else
 			File.open(File.join(Dir.pwd, ".git", "wingit_commit.txt"), "w") {|f| f << msg}
 			`git commit --file=.git/wingit_commit.txt --author="#{@author.get_value}"`
