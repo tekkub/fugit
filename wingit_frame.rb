@@ -1,10 +1,5 @@
 #~ include Wx
 
-require "wingit_commit"
-require "wingit_console"
-require "wingit_diff"
-require "wingit_index_list"
-
 class WingitFrame < Wx::Frame
 	attr_accessor :app_verion
 

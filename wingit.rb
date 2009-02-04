@@ -5,7 +5,12 @@ begin
 rescue LoadError
 end
 require 'wx'
+
 require 'wingit_frame'
+require "wingit_commit"
+require "wingit_console"
+require "wingit_diff"
+require "wingit_index_list"
 
 
 Wx::App.run do
