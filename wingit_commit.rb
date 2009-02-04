@@ -8,6 +8,7 @@ class WingitCommit < Panel
 		@input = TextCtrl.new(self, ID_ANY, nil, nil, nil, TE_MULTILINE|TE_DONTWRAP)
 		@author = TextCtrl.new(self, ID_ANY)
 		@committer = TextCtrl.new(self, ID_ANY)
+		@committer.disable
 
 		@toolbar = ToolBar.new(self, ID_ANY)
 		@toolbar.set_tool_bitmap_size(Size.new(16,16))
@@ -36,14 +37,27 @@ class WingitCommit < Panel
 		box.add(flex, 1, EXPAND)
 		self.set_sizer(box)
 
+		evt_tool(101, :on_commit_clicked)
+
 		setCommitter
 	end
 
 	def setCommitter
 		name = `git config user.name`
 		email = `git config user.email`
-		@committer.set_value("#{name} <#{email}>")
-		@author.set_value("#{name} <#{email}>")
+		@committer.set_value("#{name.chomp} <#{email.chomp}>")
+		@author.set_value("#{name.chomp} <#{email.chomp}>")
+	end
+
+	def on_commit_clicked
+		msg = @input.get_value
+		if msg.empty?
+			@no_msg_error ||= MessageDialog.new(self, "Please enter a commit message.", "Commit error", OK|ICON_ERROR)
+			@no_msg_error.show_modal
+		else
+			File.open(File.join(Dir.pwd, ".git", "wingit_commit.txt"), "w") {|f| f << msg}
+			`git commit --file=.git/wingit_commit.txt --author="#{@author.get_value}"`
+		end
 	end
 
 end
