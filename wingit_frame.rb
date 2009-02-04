@@ -41,6 +41,8 @@ class WingitFrame < Frame
 		evt_menu(ID_EXIT, :on_quit)
 		evt_menu(ID_ABOUT, :on_about)
 
+		self.accelerator_table = AcceleratorTable.new(AcceleratorEntry.new(MOD_CMD, ?w, ID_EXIT))
+
 		@mgr.update
 	end
 
