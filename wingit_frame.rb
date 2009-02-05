@@ -37,7 +37,7 @@ class WingitFrame < Frame
 		self.menu_bar = menu_bar
 
 		evt_menu(ID_SAVE) {|event| @commit.on_commit_clicked}
-		evt_menu(refresh) {|event| update}
+		evt_menu(refresh) {|event| send_message(:refresh)}
 		evt_menu(ID_EXIT, :on_quit)
 		evt_menu(ID_ABOUT, :on_about)
 
@@ -74,12 +74,6 @@ class WingitFrame < Frame
 		pi.center_pane.set_name('diff')
 		@diff = WingitDiff.new(self)
 		@mgr.add_pane(@diff, pi)
-	end
-
-
-	def update()
-		@index.update
-		@commit.update
 	end
 
 

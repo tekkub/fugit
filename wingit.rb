@@ -6,6 +6,7 @@ rescue LoadError
 end
 require 'wx'
 
+require "messages"
 require "icon_loader"
 require 'wingit_frame'
 require "wingit_commit"

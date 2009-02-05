@@ -39,6 +39,9 @@ class WingitIndexList < Panel
 		evt_listbox_dclick(@unstaged.get_id, :on_unstaged_double_click)
 		evt_listbox_dclick(@staged.get_id, :on_staged_double_click)
 
+		register_for_message(:refresh, :update)
+		register_for_message(:commit_saved, :update)
+
 		update
 	end
 

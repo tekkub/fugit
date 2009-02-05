@@ -39,15 +39,13 @@ class WingitCommit < Panel
 
 		evt_tool(101, :on_commit_clicked)
 
-		update
-	end
+		register_for_message(:commit_saved, :on_commit_saved)
+		register_for_message(:refresh, :update)
 
-	def update
 		name = `git config user.name`
 		email = `git config user.email`
 		@committer.set_value("#{name.chomp} <#{email.chomp}>")
 		@author.set_value("#{name.chomp} <#{email.chomp}>")
-		@input.set_value("")
 	end
 
 	def on_commit_clicked
@@ -61,8 +59,15 @@ class WingitCommit < Panel
 		else
 			File.open(File.join(Dir.pwd, ".git", "wingit_commit.txt"), "w") {|f| f << msg}
 			`git commit --file=.git/wingit_commit.txt --author="#{@author.get_value}"`
-			self.get_parent.update
+			send_message(:commit_saved)
 		end
+	end
+
+	def on_commit_saved
+		name = `git config user.name`
+		email = `git config user.email`
+		@author.set_value("#{name.chomp} <#{email.chomp}>")
+		@input.set_value("")
 	end
 
 end

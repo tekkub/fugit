@@ -25,6 +25,8 @@ class WingitDiff < StyledTextCtrl
 			self.style_set_background(num, Wx::Colour.new(c[0], c[1], c[2]))
 			self.style_set_eol_filled(num, true)
 		end
+
+		register_for_message(:commit_saved, :clear)
 	end
 
 	def set_diff(value)
