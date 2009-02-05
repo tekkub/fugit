@@ -73,7 +73,7 @@ class WingitIndexList < Panel
 
 		case change
 		when "N"
-			val = `cat #{file}`
+			val = File.read(file)
 			@diff.change_value(val)
 		when "M", "D"
 			val = `git diff -- #{file}`
