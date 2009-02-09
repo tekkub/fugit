@@ -50,13 +50,22 @@ class WingitIndexList < Panel
 		deleted = `git ls-files --deleted`
 		modified = `git ls-files --modified`
 		staged = `git ls-files --stage`
+		last_commit = `git ls-tree -r HEAD`
+
+		committed = {}
+		last_commit.split("\n").map do |line|
+			(info, file) = line.split("\t")
+			sha = info.match(/[a-f0-9]{40}/)[0]
+			committed[file] = sha
+		end
 
 		deleted = deleted.split("\n")
-		staged = staged.split("\n").map {|line| line.split("\t")[1]}
-		staged.reject! do |file|
-			diff = `git diff --cached -- #{file}`
-			diff.empty?
+		staged = staged.split("\n").map do |line|
+			(info, file) = line.split("\t")
+			sha = info.match(/[a-f0-9]{40}/)[0]
+			[file, sha]
 		end
+		staged.reject! {|file, sha| committed[file] == sha}
 
 		@index.hide
 		@index.delete_all_items
@@ -67,7 +76,7 @@ class WingitIndexList < Panel
 		others.split("\n").each {|file| @index.append_item(uns, file, 2, -1, [file, :new, :unstaged])}
 		modified.split("\n").each {|file| @index.append_item(uns, file, 3, -1, [file, :modified, :unstaged]) unless deleted.include?(file)}
 		deleted.each {|file| @index.append_item(uns, file, 4, -1, [file, :deleted, :unstaged])}
-		staged.each {|file| @index.append_item(stg, file, 5, -1, [file, :modified, :staged])}
+		staged.each {|file, sha| @index.append_item(stg, file, 5, -1, [file, :modified, :staged])}
 
 		@index.get_root_items.each do |i|
 			@index.set_item_bold(i)
