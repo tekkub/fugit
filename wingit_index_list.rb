@@ -2,15 +2,19 @@ include Wx
 include IconLoader
 
 class WingitIndexList < Panel
-
-	attr_accessor :unstaged, :staged, :diff
-
-
 	def initialize(parent)
 		super(parent, ID_ANY)
 
-		@unstaged = ListBox.new(self, ID_ANY, nil, nil, nil, LB_EXTENDED|LB_SORT)
-		@staged = ListBox.new(self, ID_ANY, nil, nil, nil, LB_EXTENDED|LB_SORT)
+		@index = TreeCtrl.new(self, ID_ANY, nil, nil, NO_BORDER|TR_MULTIPLE|TR_HIDE_ROOT)
+
+		imagelist = ImageList.new(16, 16)
+		imagelist << get_icon("asterisk_yellow.png")
+		imagelist << get_icon("tick.png")
+		imagelist << get_icon("script_add.png")
+		imagelist << get_icon("script_edit.png")
+		imagelist << get_icon("script_delete.png")
+		imagelist << get_icon("script.png")
+		@index.set_image_list(imagelist)
 
 		@toolbar = ToolBar.new(self, ID_ANY, nil, nil, TB_HORIZONTAL|NO_BORDER|TB_NODIVIDER)
 		@toolbar.set_tool_bitmap_size(Size.new(16,16))
@@ -21,102 +25,107 @@ class WingitIndexList < Panel
 		@toolbar.add_tool(104, "Unstage all", get_icon("folder_delete.png"), "Unstage all")
 		@toolbar.realize
 
-		unstaged_label = StaticText.new(self, ID_ANY, "Unstaged")
-		staged_label = StaticText.new(self, ID_ANY, "Staged to commit")
-		unstaged_label.set_background_colour(Colour.new(255, 192, 192))
-		staged_label.set_background_colour(Colour.new(128, 255, 128))
-
 		box = BoxSizer.new(VERTICAL)
-		box.add(unstaged_label, 0, EXPAND)
-		box.add(@unstaged, 1, EXPAND)
-		box.add(@toolbar, 0, ALIGN_CENTER_HORIZONTAL)
-		box.add(staged_label, 0, EXPAND)
-		box.add(@staged, 1, EXPAND)
+		box.add(@toolbar, 0, EXPAND)
+		box.add(@index, 1, EXPAND)
 		self.set_sizer(box)
 
-		evt_listbox(@unstaged.get_id, :on_unstaged_click)
-		evt_listbox(@staged.get_id, :on_staged_click)
-		evt_listbox_dclick(@unstaged.get_id, :on_unstaged_double_click)
-		evt_listbox_dclick(@staged.get_id, :on_staged_double_click)
+		evt_tree_sel_changed(@index.get_id, :on_click)
+		evt_tree_item_activated(@index.get_id, :on_double_click)
 
-		register_for_message(:refresh, :update)
-		register_for_message(:commit_saved, :update)
+		evt_tree_item_collapsing(@index.get_id) {|event| event.veto}
 
-		update
+		register_for_message(:refresh, :update_tree)
+		register_for_message(:commit_saved, :update_tree)
+		register_for_message(:index_changed, :update_tree)
+
+		update_tree
 	end
 
 
-	def update()
+	def update_tree()
+		self.disable
+
 		others = `git ls-files --others --exclude-standard`
 		deleted = `git ls-files --deleted`
 		modified = `git ls-files --modified`
 		staged = `git ls-files --stage`
 
-		@unstaged.clear
-		@staged.clear
-
 		deleted = deleted.split("\n")
-		deleted.each {|file| @unstaged.append(file + " (D)", [file, "D"])}
-		others.split("\n").each {|file| @unstaged.append(file + " (N)", [file, "N"])}
-		modified.split("\n").each {|file| @unstaged.append(file + " (M)", [file, "M"]) unless deleted.include?(file)}
-		staged.split("\n").each do |line|
-			(info, file) = line.split("\t")
+		staged = staged.split("\n").map {|line| line.split("\t")[1]}
+		staged.reject! do |file|
 			diff = `git diff --cached -- #{file}`
-			@staged.append(file) unless diff.empty?
+			diff.empty?
 		end
+
+		@index.delete_all_items
+		root = @index.add_root("root")
+		uns = @index.append_item(root, "Unstaged", 0)
+		stg = @index.append_item(root, "Staged", 1)
+
+		others.split("\n").each {|file| @index.append_item(uns, file, 2, -1, [file, :new, :unstaged])}
+		modified.split("\n").each {|file| @index.append_item(uns, file, 3, -1, [file, :modified, :unstaged]) unless deleted.include?(file)}
+		deleted.each {|file| @index.append_item(uns, file, 4, -1, [file, :deleted, :unstaged])}
+		staged.each {|file| @index.append_item(stg, file, 5, -1, [file, :modified, :staged])}
+
+		@index.get_root_items.each do |i|
+			@index.set_item_bold(i)
+			@index.sort_children(i)
+		end
+
+		@index.expand_all
+		self.enable
 	end
 
 
-	def on_unstaged_click(event)
-		@diff ||= self.get_parent.diff
-		@staged.deselect(-1) # Clear the other box's selection
+	def on_click(event)
+		#~ @staged.deselect(-1) # Clear the other box's selection
 
-		i = event.get_index
-		(file, change) = @unstaged.get_item_data(i)
+		i = event.get_item
+		return if i == 0 || !self.enabled?
 
-		case change
-		when "N"
-			val = File.read(file)
-			@diff.change_value(val)
-		when "M", "D"
-			val = `git diff -- #{file}`
-			@diff.set_diff(val)
+		if @index.get_root_items.include?(i)
+			send_message(:diff_clear)
 		else
-			@diff.clear
+			(file, change, status) = @index.get_item_data(i)
+			case status
+			when :unstaged
+				case change
+				when :new
+					val = File.read(file)
+					send_message(:diff_raw, val)
+				when :modified, :deleted
+					val = `git diff -- #{file}`
+					send_message(:diff_set, val)
+				else
+					send_message(:diff_clear)
+				end
+			when :staged
+				val = `git diff --cached -- #{file}`
+				send_message(:diff_set, val)
+			end
 		end
 	end
 
 
-	def on_staged_click(event)
-		@diff ||= self.get_parent.diff
-		@unstaged.deselect(-1) # Clear the other box's selection
+	def on_double_click(event)
+		i = event.get_item
+		unless @index.get_root_items.include?(i)
+			(file, change, status) = @index.get_item_data(i)
+			case status
+			when :unstaged
+				case change
+				when :deleted
+					`git rm --cached #{file}`
+				else
+					`git add #{file}`
+				end
+			when :staged
+				`git reset #{file}`
+			end
 
-		i = event.get_index
-		file = @staged.get_string(i)
-
-		val = `git diff --cached -- #{file}`
-		@diff.set_diff(val)
-	end
-
-
-	def on_unstaged_double_click(event)
-		@diff.clear
-		(file, change) = @unstaged.get_item_data(event.get_index)
-		case change
-		when "D"
-			`git rm --cached #{file}`
-		else
-			`git add #{file}`
+			send_message(:index_changed)
 		end
-		update
-	end
-
-
-	def on_staged_double_click(event)
-		@diff.clear
-		file = @staged.get_string(event.get_index)
-		`git reset #{file}`
-		update
 	end
 
 end

@@ -64,7 +64,7 @@ class WingitFrame < Frame
 		#~ @mgr.add_pane(WingitConsole.new(self), pi)
 
 		pi = AuiPaneInfo.new
-		size = Size.new(150, 350)
+		size = Size.new(200, 350)
 		pi.left.set_name('index').set_caption("Index").set_layer(2).set_position(1).set_best_size(size).set_min_size(size).set_floating_size(size)
 		@index = WingitIndexList.new(self)
 		@mgr.add_pane(@index, pi)

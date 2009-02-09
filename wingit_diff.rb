@@ -27,6 +27,10 @@ class WingitDiff < StyledTextCtrl
 		end
 
 		register_for_message(:commit_saved, :clear)
+		register_for_message(:index_changed, :clear)
+		register_for_message(:diff_clear, :clear)
+		register_for_message(:diff_set, :set_diff)
+		register_for_message(:diff_raw, :change_value)
 	end
 
 	def set_diff(value)
