@@ -50,12 +50,12 @@ class WingitCommit < Panel
 
 	def on_commit_clicked
 		msg = @input.get_value
-		if msg.empty?
-			@no_msg_error ||= MessageDialog.new(self, "Please enter a commit message.", "Commit error", OK|ICON_ERROR)
-			@no_msg_error.show_modal
-		elsif self.get_parent.index.staged.get_count == 0
+		if !has_staged_changes?
 			@nothing_to_commit_error ||= MessageDialog.new(self, "No changes are staged to commit.", "Commit error", OK|ICON_ERROR)
 			@nothing_to_commit_error.show_modal
+		elsif msg.empty?
+			@no_msg_error ||= MessageDialog.new(self, "Please enter a commit message.", "Commit error", OK|ICON_ERROR)
+			@no_msg_error.show_modal
 		else
 			File.open(File.join(Dir.pwd, ".git", "wingit_commit.txt"), "w") {|f| f << msg}
 			`git commit --file=.git/wingit_commit.txt --author="#{@author.get_value}"`
@@ -68,6 +68,26 @@ class WingitCommit < Panel
 		email = `git config user.email`
 		@author.set_value("#{name.chomp} <#{email.chomp}>")
 		@input.set_value("")
+	end
+
+	def has_staged_changes?
+		staged = `git ls-files --stage`
+		last_commit = `git ls-tree -r HEAD`
+
+		committed = {}
+		last_commit.split("\n").map do |line|
+			(info, file) = line.split("\t")
+			sha = info.match(/[a-f0-9]{40}/)[0]
+			committed[file] = sha
+		end
+
+		staged = staged.split("\n").map do |line|
+			(info, file) = line.split("\t")
+			sha = info.match(/[a-f0-9]{40}/)[0]
+			[file, sha]
+		end
+		staged.reject! {|file, sha| committed[file] == sha}
+		!staged.empty?
 	end
 
 end
