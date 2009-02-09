@@ -111,13 +111,13 @@ module Fugit
 						send_message(:diff_raw, val)
 					when :modified, :deleted
 						val = `git diff -- #{file}`
-						send_message(:diff_set, val)
+						send_message(:diff_set, val, :unstaged)
 					else
 						send_message(:diff_clear)
 					end
 				when :staged
 					val = `git diff --cached -- #{file}`
-					send_message(:diff_set, val)
+					send_message(:diff_set, val, :staged)
 				end
 			end
 		end
