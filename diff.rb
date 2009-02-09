@@ -42,7 +42,7 @@ module Fugit
 			root = @list.add_root("root")
 			chunks.each do |chunk|
 				diff = header + "\n" + chunk
-				diff = diff + "\n" if diff[-1..-1] != "\n"
+				diff = diff + "\n" if diff[-1..-1] != "\n" # git bitches if we don't have a proper newline at the end of the diff
 				chunk.split("\n").each do |line|
 					id = @list.append_item(root, line.gsub("\t", "        "), -1, -1, [diff, type])
 					@list.set_item_font(id, @list_font)
