@@ -1,30 +1,21 @@
 include Wx
 
-class WingitDiff < StyledTextCtrl
+class WingitDiff < Panel
 	def initialize(parent)
 		super(parent, ID_ANY)
 
-		self.set_margin_left(5)
-		self.set_margin_width(1, 0)
+		@list = TreeCtrl.new(self, ID_ANY, nil, nil, NO_BORDER|TR_MULTIPLE|TR_HIDE_ROOT|TR_FULL_ROW_HIGHLIGHT|TR_NO_LINES)
+		@list.hide
 
-		self.style_clear_all
+		@styled = StyledTextCtrl.new(self, ID_ANY)
+		@styled.hide
+		@styled.set_margin_left(5)
+		@styled.set_margin_width(1, 0)
 
-		(0..6).each {|i| self.style_set_face_name(i, "Courier New")}
-		{
-			2 => [0, 150, 150], # Header
-			3 => [150, 150, 0], # File
-			4 => [0, 0, 150], # Hunk
-			5 => [160, 0, 0], # Removed
-			6 => [0, 96, 0], # Added
-		}.each{|num, c| self.style_set_foreground(num, Wx::Colour.new(c[0], c[1], c[2]))}
-
-		{
-			5 => [255, 220, 220], # Removed
-			6 => [220, 255, 220], # Added
-		}.each do|num, c|
-			self.style_set_background(num, Wx::Colour.new(c[0], c[1], c[2]))
-			self.style_set_eol_filled(num, true)
-		end
+		@box = BoxSizer.new(VERTICAL)
+		@box.add(@list, 1, EXPAND)
+		@box.add(@styled, 1, EXPAND)
+		self.set_sizer(@box)
 
 		register_for_message(:commit_saved, :clear)
 		register_for_message(:index_changed, :clear)
@@ -37,23 +28,56 @@ class WingitDiff < StyledTextCtrl
 		value.gsub!(/[+-]{3} [ab]\/[^\n]+\n/, "")
 		value.gsub!(/\nindex [a-fA-F0-9]{7}\.\.[a-fA-F0-9]{7}[^\n]*/, "")
 		value.gsub!(/\Adiff[^\n]+\n/, "")
-		self.set_lexer(STC_LEX_DIFF)
-		self.write_value(value)
+
+		@styled.hide
+		@list.hide
+
+		@list_font ||= Font.new(8, FONTFAMILY_TELETYPE, FONTSTYLE_NORMAL, FONTWEIGHT_NORMAL)
+
+		@list.delete_all_items
+		root = @list.add_root("root")
+		value.split("\n").each do |line|
+			id = @list.append_item(root, line.gsub("\t", "        "))
+			@list.set_item_font(id, @list_font)
+
+			color = case line[0..0]
+				when "+"
+					Colour.new(0, 96, 0)
+				when "-"
+					Colour.new(160, 0, 0)
+				when "@"
+					Colour.new(0, 0, 150)
+				end
+			bgcolor = case line[0..0]
+				when "+"
+					Colour.new(220, 255, 220)
+				when "-"
+					Colour.new(255, 220, 220)
+				end
+			@list.set_item_text_colour(id, color) if color
+			@list.set_item_background_colour(id, bgcolor) if bgcolor
+		end
+
+		@list.show
+		@box.layout
 	end
 
 	def clear
-		self.write_value("")
+		@list.hide
+		@styled.hide
 	end
 
 	def change_value(value)
-		self.set_lexer(0)
-		self.write_value(value)
+		@list.hide
+		write_value(value)
+		@styled.show
+		@box.layout
 	end
 
 	def write_value(value)
-		self.set_read_only(false)
-		self.set_text(value)
-		self.set_read_only(true)
+		@styled.set_read_only(false)
+		@styled.set_text(value)
+		@styled.set_read_only(true)
 	end
 
 end
