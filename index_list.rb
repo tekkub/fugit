@@ -66,6 +66,9 @@ module Fugit
 				sha = info.match(/[a-f0-9]{40}/)[0]
 				[file, sha]
 			end
+			committed.each_pair do |file, sha|
+				staged << [file, ""] unless staged.assoc(file)
+			end
 			staged.reject! {|file, sha| committed[file] == sha}
 
 			@index.hide
