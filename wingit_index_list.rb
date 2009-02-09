@@ -58,6 +58,7 @@ class WingitIndexList < Panel
 			diff.empty?
 		end
 
+		@index.hide
 		@index.delete_all_items
 		root = @index.add_root("root")
 		uns = @index.append_item(root, "Unstaged", 0)
@@ -74,6 +75,7 @@ class WingitIndexList < Panel
 		end
 
 		@index.expand_all
+		@index.show
 		self.enable
 	end
 
