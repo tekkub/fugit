@@ -60,6 +60,8 @@ module Fugit
 							Colour.new(220, 255, 220)
 						when "-"
 							Colour.new(255, 220, 220)
+						when "@"
+							Colour.new(220, 220, 225)
 						end
 					@list.set_item_text_colour(id, color) if color
 					@list.set_item_background_colour(id, bgcolor) if bgcolor
