@@ -96,7 +96,7 @@ module Fugit
 				(diff, type) = @list.get_item_data(i)
 				reverse = (type == :staged ? "--reverse" : "")
 				diff_file = File.join(Dir.pwd, ".git", "fugit_partial.diff")
-				File.open(diff_file, "wb") {|f| f << diff}
+				File.open(diff_file, "wb") {|f| f << diff} # Write out in binary mode to preserve newlines, otherwise git freaks out
 				`git apply --cached #{reverse} .git/fugit_partial.diff`
 				File.delete(diff_file)
 				send_message(:index_changed)
