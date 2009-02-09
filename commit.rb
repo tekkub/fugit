@@ -58,8 +58,10 @@ module Fugit
 				@no_msg_error ||= MessageDialog.new(self, "Please enter a commit message.", "Commit error", OK|ICON_ERROR)
 				@no_msg_error.show_modal
 			else
-				File.open(File.join(Dir.pwd, ".git", "fugit_commit.txt"), "w") {|f| f << msg}
+				commit_file = File.join(Dir.pwd, ".git", "fugit_commit.txt")
+				File.open(commit_file, "w") {|f| f << msg}
 				`git commit --file=.git/fugit_commit.txt --author="#{@author.get_value}"`
+				File.delete(commit_file)
 				send_message(:commit_saved)
 			end
 		end
