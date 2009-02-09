@@ -127,12 +127,12 @@ class WingitIndexList < Panel
 			when :unstaged
 				case change
 				when :deleted
-					`git rm --cached #{file}`
+					`git rm --cached "#{file}"`
 				else
-					`git add #{file}`
+					`git add "#{file}"`
 				end
 			when :staged
-				`git reset #{file}`
+				`git reset "#{file}"`
 			end
 
 			send_message(:index_changed)
