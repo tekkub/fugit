@@ -5,7 +5,7 @@ class WingitIndexList < Panel
 	def initialize(parent)
 		super(parent, ID_ANY)
 
-		@index = TreeCtrl.new(self, ID_ANY, nil, nil, NO_BORDER|TR_MULTIPLE|TR_HIDE_ROOT)
+		@index = TreeCtrl.new(self, ID_ANY, nil, nil, NO_BORDER|TR_MULTIPLE|TR_HIDE_ROOT|TR_FULL_ROW_HIGHLIGHT|TR_NO_LINES)
 
 		imagelist = ImageList.new(16, 16)
 		imagelist << get_icon("asterisk_yellow.png")
