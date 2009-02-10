@@ -30,6 +30,7 @@ module Fugit
 			register_for_message(:diff_clear, :clear)
 			register_for_message(:diff_set, :set_diff)
 			register_for_message(:diff_raw, :change_value)
+			register_for_message(:exiting) {self.hide} # Things seem to run smoother if we hide before destruction
 		end
 
 		def set_diff(value, type)

@@ -39,8 +39,13 @@ module Fugit
 
 			evt_menu(ID_SAVE) {|event| @commit.on_commit_clicked}
 			evt_menu(refresh) {|event| send_message(:refresh)}
-			evt_menu(ID_EXIT, :on_quit)
+			evt_menu(ID_EXIT) {|event| close} # End the application; it should finish automatically when the last window is closed.
 			evt_menu(ID_ABOUT, :on_about)
+			evt_close() do |event|
+				send_message(:exiting) # Notify listeners that we're closing up shop
+				destroy
+				exit
+			end
 
 			self.accelerator_table = AcceleratorTable.new(AcceleratorEntry.new(MOD_CMD, ?w, ID_EXIT))
 
@@ -75,16 +80,6 @@ module Fugit
 			pi.center_pane.set_name('diff')
 			@diff = Diff.new(self)
 			@mgr.add_pane(@diff, pi)
-		end
-
-
-		######################
-		##      Events      ##
-		######################
-
-		# End the application; it should finish automatically when the last window is closed.
-		def on_quit
-			close()
 		end
 
 		def on_about
