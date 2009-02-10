@@ -8,6 +8,11 @@ module Fugit
 			@list = TreeCtrl.new(self, ID_ANY, nil, nil, NO_BORDER|TR_MULTIPLE|TR_HIDE_ROOT|TR_FULL_ROW_HIGHLIGHT|TR_NO_LINES)
 			@list.hide
 
+			@list_menu = Menu.new
+			@menu_stage_chunk = @list_menu.append('Stage this chunk')
+			evt_menu(@menu_stage_chunk, :on_menu_stage_chunk)
+
+
 			@styled = StyledTextCtrl.new(self, ID_ANY)
 			@styled.hide
 			@styled.set_margin_left(5)
@@ -19,6 +24,7 @@ module Fugit
 			self.set_sizer(@box)
 
 			#~ evt_tree_sel_changed(@list.get_id, :on_click)
+			evt_tree_item_menu(@list.get_id, :on_item_menu_request)
 			evt_tree_item_activated(@list.get_id, :on_double_click)
 
 			register_for_message(:commit_saved, :clear)
@@ -90,18 +96,32 @@ module Fugit
 			@styled.set_read_only(true)
 		end
 
-		def on_double_click(event)
+		def on_item_menu_request(event)
 			i = event.get_item
+			@menu_data = nil
 			unless @list.get_root_item == i
-				(diff, type) = @list.get_item_data(i)
-				reverse = (type == :staged ? "--reverse" : "")
-				diff_file = File.join(Dir.pwd, ".git", "fugit_partial.diff")
-				File.open(diff_file, "wb") {|f| f << diff} # Write out in binary mode to preserve newlines, otherwise git freaks out
-				`git apply --cached #{reverse} .git/fugit_partial.diff`
-				File.delete(diff_file)
-				send_message(:index_changed)
+				@menu_data = @list.get_item_data(i)
+				@list_menu.set_label(@menu_stage_chunk.get_id, (@menu_data[1] == :staged ? "Unstage chunk" : "Stage chunk"))
+				@list.popup_menu(@list_menu)
 			end
 		end
 
+		def on_menu_stage_chunk(event)
+			apply_diff(*@menu_data) if @menu_data
+		end
+
+		def on_double_click(event)
+			i = event.get_item
+			apply_diff(*@list.get_item_data(i)) unless @list.get_root_item == i
+		end
+
+		def apply_diff(diff, type)
+			reverse = (type == :staged ? "--reverse" : "")
+			diff_file = File.join(Dir.pwd, ".git", "fugit_partial.diff")
+			File.open(diff_file, "wb") {|f| f << diff} # Write out in binary mode to preserve newlines, otherwise git freaks out
+			`git apply --cached #{reverse} .git/fugit_partial.diff`
+			File.delete(diff_file)
+			send_message(:index_changed)
+		end
 	end
 end
