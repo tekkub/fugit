@@ -4,6 +4,7 @@ module Fugit
 	class Diff < Panel
 		def initialize(parent)
 			super(parent, ID_ANY)
+			self.set_font(Font.new(8, FONTFAMILY_TELETYPE, FONTSTYLE_NORMAL, FONTWEIGHT_NORMAL))
 
 			@list = TreeCtrl.new(self, ID_ANY, nil, nil, NO_BORDER|TR_MULTIPLE|TR_HIDE_ROOT|TR_FULL_ROW_HIGHLIGHT|TR_NO_LINES)
 			@list.hide
@@ -39,8 +40,6 @@ module Fugit
 			@text.hide
 			@list.hide
 
-			@list_font ||= Font.new(8, FONTFAMILY_TELETYPE, FONTSTYLE_NORMAL, FONTWEIGHT_NORMAL)
-
 			@list.delete_all_items
 			root = @list.add_root("root")
 			chunks.each do |chunk|
@@ -48,7 +47,6 @@ module Fugit
 				diff = diff + "\n" if diff[-1..-1] != "\n" # git bitches if we don't have a proper newline at the end of the diff
 				chunk.split("\n").each do |line|
 					id = @list.append_item(root, line.gsub("\t", "        "), -1, -1, [diff, type])
-					@list.set_item_font(id, @list_font)
 
 					color = case line[0..0]
 						when "+"
