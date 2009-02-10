@@ -40,6 +40,7 @@ module Fugit
 
 			evt_tool(101, :on_commit_clicked)
 
+			register_for_message(:save_clicked, :on_commit_clicked)
 			register_for_message(:commit_saved, :on_commit_saved)
 			register_for_message(:refresh, :update)
 

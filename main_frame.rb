@@ -37,7 +37,7 @@ module Fugit
 			# Assign the menubar to this frame
 			self.menu_bar = menu_bar
 
-			evt_menu(ID_SAVE) {|event| @commit.on_commit_clicked}
+			evt_menu(ID_SAVE) {|event| send_message(:save_clicked)}
 			evt_menu(refresh) {|event| send_message(:refresh)}
 			evt_menu(ID_EXIT) {|event| close} # End the application; it should finish automatically when the last window is closed.
 			evt_menu(ID_ABOUT, :on_about)
