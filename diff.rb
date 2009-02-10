@@ -72,6 +72,7 @@ module Fugit
 			end
 
 			@list.show
+			@list.set_focus
 			@box.layout
 		end
 
@@ -84,6 +85,7 @@ module Fugit
 			@list.hide
 			@text.set_value(value)
 			@text.show
+			@text.set_focus
 			@box.layout
 		end
 
