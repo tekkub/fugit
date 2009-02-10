@@ -12,15 +12,12 @@ module Fugit
 			@menu_stage_chunk = @list_menu.append('Stage this chunk')
 			evt_menu(@menu_stage_chunk, :on_menu_stage_chunk)
 
-
-			@styled = StyledTextCtrl.new(self, ID_ANY)
-			@styled.hide
-			@styled.set_margin_left(5)
-			@styled.set_margin_width(1, 0)
+			@text = TextCtrl.new(self, ID_ANY, nil, nil, nil, TE_MULTILINE|TE_DONTWRAP|TE_READONLY)
+			@text.hide
 
 			@box = BoxSizer.new(VERTICAL)
 			@box.add(@list, 1, EXPAND)
-			@box.add(@styled, 1, EXPAND)
+			@box.add(@text, 1, EXPAND)
 			self.set_sizer(@box)
 
 			#~ evt_tree_sel_changed(@list.get_id, :on_click)
@@ -39,7 +36,7 @@ module Fugit
 			header = chunks.slice!(0)
 			chunks.map! {|line| "@@"+line}
 
-			@styled.hide
+			@text.hide
 			@list.hide
 
 			@list_font ||= Font.new(8, FONTFAMILY_TELETYPE, FONTSTYLE_NORMAL, FONTWEIGHT_NORMAL)
@@ -80,20 +77,14 @@ module Fugit
 
 		def clear
 			@list.hide
-			@styled.hide
+			@text.hide
 		end
 
 		def change_value(value)
 			@list.hide
-			write_value(value)
-			@styled.show
+			@text.set_value(value)
+			@text.show
 			@box.layout
-		end
-
-		def write_value(value)
-			@styled.set_read_only(false)
-			@styled.set_text(value)
-			@styled.set_read_only(true)
 		end
 
 		def on_item_menu_request(event)
