@@ -7,6 +7,7 @@ module Fugit
 			self.set_font(Font.new(8, FONTFAMILY_TELETYPE, FONTSTYLE_NORMAL, FONTWEIGHT_NORMAL))
 
 			@list = TreeCtrl.new(self, ID_ANY, nil, nil, NO_BORDER|TR_MULTIPLE|TR_HIDE_ROOT|TR_FULL_ROW_HIGHLIGHT|TR_NO_LINES)
+			@root = @list.add_root("root")
 			@list.hide
 
 			@list_menu = Menu.new
@@ -40,13 +41,13 @@ module Fugit
 			@text.hide
 			@list.hide
 
-			@list.delete_all_items
-			root = @list.add_root("root")
+			@list.delete_children(@root)
+
 			chunks.each do |chunk|
 				diff = header + "\n" + chunk
 				diff = diff + "\n" if diff[-1..-1] != "\n" # git bitches if we don't have a proper newline at the end of the diff
 				chunk.split("\n").each do |line|
-					id = @list.append_item(root, line.gsub("\t", "        "), -1, -1, [diff, type])
+					id = @list.append_item(@root, line.gsub("\t", "        "), -1, -1, [diff, type])
 
 					color = case line[0..0]
 						when "+"
@@ -90,7 +91,7 @@ module Fugit
 		def on_item_menu_request(event)
 			i = event.get_item
 			@menu_data = nil
-			unless @list.get_root_item == i
+			unless @root == i
 				@menu_data = @list.get_item_data(i)
 				@list_menu.set_label(@menu_stage_chunk.get_id, (@menu_data[1] == :staged ? "Unstage chunk" : "Stage chunk"))
 				@list.popup_menu(@list_menu)
@@ -103,7 +104,7 @@ module Fugit
 
 		def on_double_click(event)
 			i = event.get_item
-			apply_diff(*@list.get_item_data(i)) unless @list.get_root_item == i
+			apply_diff(*@list.get_item_data(i)) unless @root == i
 		end
 
 		def apply_diff(diff, type)

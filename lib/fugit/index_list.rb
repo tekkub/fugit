@@ -17,6 +17,12 @@ module Fugit
 			imagelist << get_icon("script.png")
 			@index.set_image_list(imagelist)
 
+			root = @index.add_root("root")
+			@unstaged = @index.append_item(root, "Unstaged", 0)
+			@staged = @index.append_item(root, "Staged", 1)
+			@index.set_item_bold(@unstaged)
+			@index.set_item_bold(@staged)
+
 			@toolbar = ToolBar.new(self, ID_ANY, nil, nil, TB_HORIZONTAL|NO_BORDER|TB_NODIVIDER)
 			@toolbar.set_tool_bitmap_size(Size.new(16,16))
 			@toolbar.add_tool(101, "Stage all", get_icon("folder_add.png"), "Stage all")
@@ -77,20 +83,18 @@ module Fugit
 
 			@index.hide
 			selection = @index.get_selections.map {|i| @index.get_item_data(i)}
-			@index.delete_all_items
-			root = @index.add_root("root")
-			uns = @index.append_item(root, "Unstaged", 0)
-			stg = @index.append_item(root, "Staged", 1)
+			@index.delete_children(@unstaged)
+			@index.delete_children(@staged)
 
-			others.split("\n").each {|file| @index.append_item(uns, file, 2, -1, [file, :new, :unstaged])}
-			modified.split("\n").each {|file| @index.append_item(uns, file, 3, -1, [file, :modified, :unstaged]) unless deleted.include?(file)}
-			deleted.each {|file| @index.append_item(uns, file, 4, -1, [file, :deleted, :unstaged])}
-			staged.each {|file, sha| @index.append_item(stg, file, 5, -1, [file, :modified, :staged])}
+			others.split("\n").each {|file| @index.append_item(@unstaged, file, 2, -1, [file, :new, :unstaged])}
+			modified.split("\n").each {|file| @index.append_item(@unstaged, file, 3, -1, [file, :modified, :unstaged]) unless deleted.include?(file)}
+			deleted.each {|file| @index.append_item(@unstaged, file, 4, -1, [file, :deleted, :unstaged])}
+			staged.each {|file, sha| @index.append_item(@staged, file, 5, -1, [file, :modified, :staged])}
 
-			@index.get_root_items.each do |i|
-				@index.set_item_bold(i)
-				@index.sort_children(i)
-			end
+			@index.sort_children(@unstaged)
+			@index.sort_children(@staged)
+			@index.select_item(@unstaged, false)
+			@index.select_item(@staged, false)
 
 			to_select = []
 			@index.each {|i| to_select << i if selection.include?(@index.get_item_data(i))}
@@ -116,7 +120,7 @@ module Fugit
 			i = event.get_item
 			return if i == 0 || !self.enabled?
 
-			if @index.get_root_items.include?(i) || @index.get_selections.size != 1
+			if i == @unstaged || i == @staged || @index.get_selections.size != 1
 				send_message(:diff_clear)
 			else
 				set_diff(*@index.get_item_data(i))
@@ -126,7 +130,7 @@ module Fugit
 
 		def on_double_click(event)
 			i = event.get_item
-			unless @index.get_root_items.include?(i)
+			unless i == @unstaged || i == @staged
 				(file, change, status) = @index.get_item_data(i)
 				case status
 				when :unstaged
@@ -145,7 +149,7 @@ module Fugit
 		end
 
 		def on_stage_all_clicked(event)
-			children = @index.get_children(@index.get_root_items[0]).map {|child| @index.get_item_data(child)}
+			children = @index.get_children(@unstaged).map {|child| @index.get_item_data(child)}
 			to_delete = children.reject {|file, change, status| change != :deleted}.map {|f,c,s| f}
 			to_add = children.map {|f,c,s| f} - to_delete
 			`git rm --cached "#{to_delete.join('" "')}"` unless to_delete.empty?
@@ -154,7 +158,7 @@ module Fugit
 		end
 
 		def on_unstage_all_clicked(event)
-			children = @index.get_children(@index.get_root_items[1]).map {|child| @index.get_item_data(child)[0]}
+			children = @index.get_children(@staged).map {|child| @index.get_item_data(child)[0]}
 			`git reset "#{children.join('" "')}"` unless children.empty?
 			send_message(:index_changed)
 		end
