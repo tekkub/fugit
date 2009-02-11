@@ -30,4 +30,3 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<wxruby>, [">= 1.9.9"])
   end
 end
-
