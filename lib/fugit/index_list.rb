@@ -102,8 +102,11 @@ module Fugit
 			end
 
 			@index.expand_all
+			@index.ensure_visible(to_select.empty? ? @unstaged : to_select[0])
+			@index.set_scroll_pos(HORIZONTAL, 0)
 			@index.show
 			self.enable
+			self.set_focus unless to_select.size == 1
 		end
 
 
