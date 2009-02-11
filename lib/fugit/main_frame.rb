@@ -6,7 +6,8 @@ module Fugit
 		attr_accessor :app_verion, :index, :commit, :diff
 
 		def initialize(title, version)
-			super(nil, :title => title, :size => [ 800, 600 ])
+			setup_working_directory
+			super(nil, :title => "#{pwd} - #{title}", :size => [ 800, 600 ])
 
 			self.app_verion = version
 
@@ -57,6 +58,16 @@ module Fugit
 		#####################
 		##      Setup      ##
 		#####################
+
+		def setup_working_directory
+			orig = Dir.pwd
+			last_dir = nil
+			while !File.exist?(".git") && last_dir != Dir.pwd
+				last_dir = Dir.pwd
+				Dir.chdir("..")
+			end
+			Dir.chdir(orig) unless File.exist?(".git") # We got to the top level without finding a git directory
+		end
 
 		def setup_panes
 			pi = AuiPaneInfo.new
