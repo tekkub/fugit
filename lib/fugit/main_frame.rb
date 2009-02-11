@@ -6,7 +6,7 @@ module Fugit
 		attr_accessor :app_verion, :index, :commit, :diff
 
 		def initialize(title, version)
-			setup_working_directory
+			pwd = setup_working_directory
 			super(nil, :title => "#{pwd} - #{title}", :size => [ 800, 600 ])
 
 			self.app_verion = version
@@ -67,6 +67,7 @@ module Fugit
 				Dir.chdir("..")
 			end
 			Dir.chdir(orig) unless File.exist?(".git") # We got to the top level without finding a git directory
+			File.basename(Dir.pwd)
 		end
 
 		def setup_panes
