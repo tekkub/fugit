@@ -76,6 +76,7 @@ module Fugit
 			staged.reject! {|file, sha| committed[file] == sha}
 
 			@index.hide
+			selection = @index.get_selections.map {|i| @index.get_item_data(i)}
 			@index.delete_all_items
 			root = @index.add_root("root")
 			uns = @index.append_item(root, "Unstaged", 0)
@@ -89,6 +90,15 @@ module Fugit
 			@index.get_root_items.each do |i|
 				@index.set_item_bold(i)
 				@index.sort_children(i)
+			end
+
+			to_select = []
+			@index.each {|i| to_select << i if selection.include?(@index.get_item_data(i))}
+			to_select.each {|i| @index.select_item(i)}
+			if to_select.size == 1
+				set_diff(*@index.get_item_data(to_select[0]))
+			else
+				send_message(:diff_clear)
 			end
 
 			@index.expand_all
@@ -106,23 +116,7 @@ module Fugit
 			if @index.get_root_items.include?(i) || @index.get_selections.size != 1
 				send_message(:diff_clear)
 			else
-				(file, change, status) = @index.get_item_data(i)
-				case status
-				when :unstaged
-					case change
-					when :new
-						val = File.read(file)
-						send_message(:diff_raw, val)
-					when :modified, :deleted
-						val = `git diff -- #{file}`
-						send_message(:diff_set, val, :unstaged)
-					else
-						send_message(:diff_clear)
-					end
-				when :staged
-					val = `git diff --cached -- #{file}`
-					send_message(:diff_set, val, :staged)
-				end
+				set_diff(*@index.get_item_data(i))
 			end
 		end
 
@@ -160,6 +154,25 @@ module Fugit
 			children = @index.get_children(@index.get_root_items[1]).map {|child| @index.get_item_data(child)[0]}
 			`git reset "#{children.join('" "')}"` unless children.empty?
 			send_message(:index_changed)
+		end
+
+		def set_diff(file, change, status)
+			case status
+			when :unstaged
+				case change
+				when :new
+					val = File.read(file)
+					send_message(:diff_raw, val)
+				when :modified, :deleted
+					val = `git diff -- #{file}`
+					send_message(:diff_set, val, :unstaged)
+				else
+					send_message(:diff_clear)
+				end
+			when :staged
+				val = `git diff --cached -- #{file}`
+				send_message(:diff_set, val, :staged)
+			end
 		end
 
 	end
