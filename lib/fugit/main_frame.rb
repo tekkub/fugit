@@ -1,4 +1,5 @@
 include Wx
+include IconLoader
 
 module Fugit
 	class MainFrame < Frame
@@ -16,7 +17,7 @@ module Fugit
 			set_min_size(Size.new(400,300))
 			setup_panes
 
-			icon_file = File.join(File.dirname(__FILE__), "icons", "plus_minus.gif")
+			icon_file = File.expand_path(File.join(IconBasePath, "plus_minus.gif"))
 			self.icon = Icon.new(icon_file, BITMAP_TYPE_GIF)
 
 			menu_bar = MenuBar.new
