@@ -103,7 +103,7 @@ module Fugit
 			i = event.get_item
 			return if i == 0 || !self.enabled?
 
-			if @index.get_root_items.include?(i)
+			if @index.get_root_items.include?(i) || @index.get_selections.size != 1
 				send_message(:diff_clear)
 			else
 				(file, change, status) = @index.get_item_data(i)
