@@ -10,6 +10,7 @@ begin
 		s.description = "A cross-platform replacement for git-gui based on wxruby"
 		s.authors = ["Tekkub"]
 		s.bindir = 'bin'
+		s.add_dependency('wxruby', [">= 1.9.9"])
 	end
 rescue LoadError
 	puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
