@@ -12,8 +12,10 @@ require "fugit/diff"
 require "fugit/index_list"
 
 
+version = File.exist?(File.join(File.dirname(__FILE__), "..", ".git")) ? "Developer's alpha" : Gem.searcher.find("fugit").version.to_s rescue "Unknown"
+
 Wx::App.run do
 	self.app_name = "Fugit"
-	frame = Fugit::MainFrame.new("Fugit", "0.0.1 Alpha")
+	frame = Fugit::MainFrame.new("Fugit", version)
 	frame.show
 end
