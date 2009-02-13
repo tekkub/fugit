@@ -17,7 +17,7 @@ module Fugit
 			@toolbar.add_tool(102, "Sign off", get_icon("text_signature.png"), "Sign off")
 			@toolbar.add_separator
 			@toolbar.add_tool(103, "Push", get_icon("page_up.gif"), "Push")
-			@toolbar.add_tool(104, "Pull", get_icon("page_down.gif"), "Pull")
+			#~ @toolbar.add_tool(104, "Pull", get_icon("page_down.gif"), "Pull")
 			@toolbar.realize
 
 			box = BoxSizer.new(HORIZONTAL)
@@ -39,6 +39,7 @@ module Fugit
 			self.set_sizer(box)
 
 			evt_tool(101, :on_commit_clicked)
+			evt_tool(103, :on_push_clicked)
 
 			register_for_message(:save_clicked, :on_commit_clicked)
 			register_for_message(:commit_saved, :on_commit_saved)
@@ -92,6 +93,10 @@ module Fugit
 			end
 			staged.reject! {|file, sha| committed[file] == sha}
 			!staged.empty?
+		end
+
+		def on_push_clicked
+			`git push`
 		end
 
 	end
