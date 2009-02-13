@@ -7,7 +7,7 @@ module Fugit
 
 		def initialize(title, version)
 			pwd = setup_working_directory
-			super(nil, :title => "#{pwd} - #{title}", :size => [ 800, 600 ])
+			super(nil, :title => "#{pwd} - #{title}#{version == "Developer's alpha" ? " ~~ALPHA~~" : ""}", :size => [ 800, 600 ])
 
 			self.app_verion = version
 
