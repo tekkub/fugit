@@ -6,6 +6,7 @@ require 'wx'
 require "fugit/messages"
 require "fugit/icon_loader"
 require "fugit/main_frame"
+require "fugit/commit_tab"
 require "fugit/commit"
 require "fugit/console"
 require "fugit/diff"
