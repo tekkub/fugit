@@ -11,7 +11,9 @@ module Fugit
 
 			@notebook = Notebook.new(self, ID_ANY, :style => FULL_REPAINT_ON_RESIZE)
 			@commit_panel = CommitTab.new(@notebook)
+			@history_panel = HistroyTab.new(@notebook)
 			@notebook.add_page(@commit_panel, "Commit", true)
+			@notebook.add_page(@history_panel, "History")
 
 			box = BoxSizer.new(VERTICAL)
 			box.add(@notebook, 1, EXPAND)
@@ -21,6 +23,8 @@ module Fugit
 
 			icon_file = File.expand_path(File.join(IconBasePath, "plus_minus.gif"))
 			self.icon = Icon.new(icon_file, BITMAP_TYPE_GIF)
+
+			evt_notebook_page_changed(@notebook) {|event| send_message(:history_tab_shown) if event.get_selection == 1}
 
 			menu_bar = MenuBar.new
 

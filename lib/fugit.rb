@@ -11,6 +11,8 @@ require "fugit/commit"
 require "fugit/console"
 require "fugit/diff"
 require "fugit/index_list"
+require "fugit/history_tab"
+require "fugit/history_list"
 
 
 version = File.exist?(File.join(File.dirname(__FILE__), "..", ".git")) ? "Developer's alpha" : Gem.searcher.find("fugit").version.to_s rescue "Unknown"
