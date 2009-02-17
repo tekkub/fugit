@@ -25,12 +25,22 @@ module Fugit
 
 			@toolbar = ToolBar.new(self, ID_ANY, nil, nil, TB_HORIZONTAL|NO_BORDER|TB_NODIVIDER)
 			@toolbar.set_tool_bitmap_size(Size.new(16,16))
-			@toolbar.add_tool(101, "Stage all", get_icon("folder_add.png"), "Stage all")
-			@toolbar.add_tool(102, "Stage", get_icon("page_add.png"), "Stage file")
+			stage_all_button = @toolbar.add_tool(ID_ANY, "Stage all", get_icon("folder_add.png"), "Stage all")
+			stage_button = @toolbar.add_tool(ID_ANY, "Stage", get_icon("page_add.png"), "Stage file")
 			@toolbar.add_separator
-			@toolbar.add_tool(103, "Unstage", get_icon("page_delete.png"), "Unstage file")
-			@toolbar.add_tool(104, "Unstage all", get_icon("folder_delete.png"), "Unstage all")
+			unstage_button = @toolbar.add_tool(ID_ANY, "Unstage", get_icon("page_delete.png"), "Unstage file")
+			unstage_all_button = @toolbar.add_tool(ID_ANY, "Unstage all", get_icon("folder_delete.png"), "Unstage all")
 			@toolbar.realize
+
+			@unstaged_menu = Menu.new
+			@menu_stage_file = @unstaged_menu.append('Stage file')
+			@menu_revert_changes = @unstaged_menu.append('Revert changes')
+			@staged_menu = Menu.new
+			@menu_unstage_file = @staged_menu.append('Unstage file')
+			evt_menu(@menu_stage_file, :on_menu_stage_file)
+			evt_menu(@menu_revert_changes, :on_menu_revert_changes)
+			evt_menu(@menu_unstage_file, :on_menu_stage_file)
+			evt_tree_item_menu(@index.get_id, :on_menu_request)
 
 			box = BoxSizer.new(VERTICAL)
 			box.add(@toolbar, 0, EXPAND)
@@ -40,8 +50,8 @@ module Fugit
 			evt_tree_sel_changed(@index.get_id, :on_click)
 			evt_tree_item_activated(@index.get_id, :on_double_click)
 
-			evt_tool(101, :on_stage_all_clicked)
-			evt_tool(104, :on_unstage_all_clicked)
+			evt_tool(stage_all_button, :on_stage_all_clicked)
+			evt_tool(unstage_all_button, :on_unstage_all_clicked)
 
 			evt_tree_item_collapsing(@index.get_id) {|event| event.veto}
 
@@ -131,20 +141,7 @@ module Fugit
 		def on_double_click(event)
 			i = event.get_item
 			unless i == @unstaged || i == @staged
-				(file, change, status) = @index.get_item_data(i)
-				case status
-				when :unstaged
-					case change
-					when :deleted
-						`git rm --cached "#{file}"`
-					else
-						`git add "#{file}"`
-					end
-				when :staged
-					`git reset "#{file}"`
-				end
-
-				send_message(:index_changed)
+				process_staging(*@index.get_item_data(i))
 			end
 		end
 
@@ -171,15 +168,59 @@ module Fugit
 					val = File.read(file)
 					send_message(:diff_raw, val)
 				when :modified, :deleted
-					val = `git diff -- #{file}`
+					val = `git diff -- "#{file}"`
 					send_message(:diff_set, val, :unstaged)
 				else
 					send_message(:diff_clear)
 				end
 			when :staged
-				val = `git diff --cached -- #{file}`
+				val = `git diff --cached -- "#{file}"`
 				send_message(:diff_set, val, :staged)
 			end
+		end
+
+		def on_menu_request(event)
+			i = event.get_item
+			@menu_data = nil
+			unless [@root, @staged, @unstaged].include?(i)
+				@menu_data = @index.get_item_data(i)
+				@menu_revert_changes.enable(@menu_data[1] != :new)
+				@index.popup_menu(@menu_data[2] == :staged ? @staged_menu : @unstaged_menu)
+			end
+		end
+
+		def on_menu_stage_file(event)
+			process_staging(*@menu_data) if @menu_data
+		end
+
+		def on_menu_revert_changes(event)
+			@confirm_revert ||= MessageDialog.new(self, "Are you sure you want to revert these changes?\nThe changes will be lost, this cannot be undone.", "Confirm revert", NO_DEFAULT|YES_NO|ICON_EXCLAMATION)
+
+			if @confirm_revert.show_modal == ID_YES
+				diff = `git diff -- "#{@menu_data[0]}"`
+				diff_file = File.join(Dir.pwd, ".git", "fugit_partial.diff")
+				File.open(diff_file, "wb") {|f| f << diff} # Write out in binary mode to preserve newlines, otherwise git freaks out
+				`git apply --reverse .git/fugit_partial.diff`
+				File.delete(diff_file)
+
+				send_message(:index_changed)
+			end
+		end
+
+		def process_staging(file, change, status)
+			case status
+			when :unstaged
+				case change
+				when :deleted
+					`git rm --cached "#{file}"`
+				else
+					`git add "#{file}"`
+				end
+			when :staged
+				`git reset "#{file}"`
+			end
+
+			send_message(:index_changed)
 		end
 
 	end
