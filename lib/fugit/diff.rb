@@ -60,7 +60,6 @@ module Fugit
 							chunk_lines.map! {|l| l.gsub(/\A-/, " ")}
 							chunk_lines.insert(i, line)
 							chunk_lines.reject! {|l| l[0..0] == "+" && l != line}
-							#~ chunk_lines << chunk.split("\n")[i]
 							header + "\n" + chunk_lines.join("\n") + "\n"
 						else
 							""
