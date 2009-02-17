@@ -12,6 +12,7 @@ require "fugit/console"
 require "fugit/diff"
 require "fugit/index_list"
 require "fugit/history_tab"
+require "fugit/graph_renderer"
 require "fugit/history_list"
 
 

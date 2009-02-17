@@ -1,4 +1,6 @@
+# encoding: utf-8
 include Wx
+include Fugit::GraphRenderer
 
 module Fugit
 	class HistoryList < Panel
@@ -6,7 +8,7 @@ module Fugit
 			super(parent, ID_ANY)
 			self.set_font(Font.new(8, FONTFAMILY_TELETYPE, FONTSTYLE_NORMAL, FONTWEIGHT_NORMAL))
 
-			@list = ListCtrl.new(self, ID_ANY, :style => LC_REPORT|LC_HRULES|LC_VRULES)
+			@list = ListCtrl.new(self, ID_ANY, :style => LC_REPORT|LC_VRULES|NO_BORDER)
 
 			@box = BoxSizer.new(VERTICAL)
 			@box.add(@list, 1, EXPAND)
@@ -29,19 +31,16 @@ module Fugit
 
 			mono_font = Font.new(8, FONTFAMILY_TELETYPE, FONTSTYLE_NORMAL, FONTWEIGHT_NORMAL)
 
-			log = `git log --all --pretty=oneline --graph`
-			lines = log.split("\n")
-			lines.each_index do |i,line|
-				line = lines[i]
-				(match, graph, sha, comment) = line.match(/\A(.+) ([a-f0-9]{40}) (.+)\Z/).to_a
-				if graph
-					@list.insert_item(i, sha)
-					@list.set_item(i, 0, graph)
-					@list.set_item(i, 1, sha[0..7])
-					@list.set_item(i, 2, comment)
-				else
-					@list.insert_item(i, line)
-				end
+			output = `git log --pretty=format:"%H\t%P\t%s" --date-order --all`
+			lines = output.split("\n").map! {|line| line.split("\t")}
+			log = graphify(lines)
+
+			log.each_index do |i|
+				(graph, comment, sha) = log[i]
+				@list.insert_item(i, sha)
+				@list.set_item(i, 0, graph)
+				@list.set_item(i, 1, sha[0..7])
+				@list.set_item(i, 2, (comment.nil? || comment.empty?) ? "<No comment>" : comment)
 			end
 
 			@list.set_column_width(0, -1)
