@@ -96,7 +96,7 @@ module Fugit
 		end
 
 		def on_push_clicked
-			`git push`
+			`git push origin HEAD`
 		end
 
 	end
