@@ -96,7 +96,8 @@ module Fugit
 		end
 
 		def on_push_clicked
-			`git push origin HEAD`
+			@push_dialog ||= PushDialog .new(self)
+			@push_dialog.show
 		end
 
 	end

@@ -3,6 +3,7 @@ $:.unshift File.dirname(__FILE__)
 
 require 'wx'
 
+require "fugit/io_get_line"
 require "fugit/messages"
 require "fugit/icon_loader"
 require "fugit/main_frame"
@@ -14,6 +15,7 @@ require "fugit/index_list"
 require "fugit/history_tab"
 require "fugit/graph_renderer"
 require "fugit/history_list"
+require "fugit/push_dialog"
 
 
 version = File.exist?(File.join(File.dirname(__FILE__), "..", ".git")) ? "Developer's alpha" : Gem.searcher.find("fugit").version.to_s rescue "Unknown"
