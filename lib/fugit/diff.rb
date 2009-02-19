@@ -6,8 +6,7 @@ module Fugit
 			super(parent, ID_ANY)
 			self.set_font(Font.new(8, FONTFAMILY_TELETYPE, FONTSTYLE_NORMAL, FONTWEIGHT_NORMAL))
 
-			@list = TreeCtrl.new(self, ID_ANY, nil, nil, NO_BORDER|TR_MULTIPLE|TR_HIDE_ROOT|TR_FULL_ROW_HIGHLIGHT|TR_NO_LINES)
-			@root = @list.add_root("root")
+			@list = ListCtrl.new(self, ID_ANY, :style => LC_REPORT|LC_VRULES|NO_BORDER|LC_NO_HEADER)
 			@list.hide
 
 			@list_menu = Menu.new
@@ -25,8 +24,8 @@ module Fugit
 			self.set_sizer(@box)
 
 			#~ evt_tree_sel_changed(@list.get_id, :on_click)
-			evt_tree_item_menu(@list.get_id, :on_item_menu_request)
-			evt_tree_item_activated(@list.get_id, :on_double_click)
+			evt_list_item_right_click(@list.get_id, :on_item_menu_request)
+			evt_list_item_activated(@list.get_id, :on_double_click)
 
 			register_for_message(:commit_saved, :clear)
 			register_for_message(:diff_clear, :clear)
@@ -43,8 +42,10 @@ module Fugit
 			@text.hide
 			@list.hide
 
-			@list.delete_children(@root)
+			@list.clear_all
+			@list.insert_column(0, "Graph")
 
+			last_id = -1
 			chunks.each do |chunk|
 				chunk_diff = header + "\n" + chunk
 				chunk_diff += "\n" if chunk_diff[-1..-1] != "\n" # git bitches if we don't have a proper newline at the end of the diff
@@ -65,8 +66,6 @@ module Fugit
 							""
 						end
 
-					id = @list.append_item(@root, line.gsub("\t", "        "), -1, -1, [chunk_diff, line_diff, type])
-
 					color = case line[0..0]
 						when "+"
 							Colour.new(0, 96, 0)
@@ -83,10 +82,21 @@ module Fugit
 						when "@"
 							Colour.new(220, 220, 225)
 						end
-					@list.set_item_text_colour(id, color) if color
-					@list.set_item_background_colour(id, bgcolor) if bgcolor
+
+					item = ListItem.new
+					item.set_id(last_id += 1)
+					item.set_column(0)
+					item.set_data([chunk_diff, line_diff, type])
+					item.set_text(line.gsub("\t", "        "))
+					item.set_text_colour(color) if color
+					item.set_background_colour(bgcolor) if bgcolor
+
+					@list.insert_item(item)
 				end
 			end
+
+			@list.set_column_width(0, -1)
+			@list.set_column_width(0, [@list.get_column_width(0), self.size.width].max)
 
 			@list.show
 			@list.set_focus
@@ -107,15 +117,11 @@ module Fugit
 		end
 
 		def on_item_menu_request(event)
-			i = event.get_item
-			@menu_data = nil
-			unless @root == i
-				@menu_data = @list.get_item_data(i)
-				@list_menu.set_label(@menu_stage_chunk.get_id, (@menu_data[2] == :staged ? "Unstage chunk" : "Stage chunk"))
-				@list_menu.set_label(@menu_stage_line.get_id, (@menu_data[2] == :staged ? "Unstage line" : "Stage line"))
-				@menu_stage_line.enable(!@menu_data[1].empty?)
-				@list.popup_menu(@list_menu)
-			end
+			@menu_data = event.get_item.get_data
+			@list_menu.set_label(@menu_stage_chunk.get_id, (@menu_data[2] == :staged ? "Unstage chunk" : "Stage chunk"))
+			@list_menu.set_label(@menu_stage_line.get_id, (@menu_data[2] == :staged ? "Unstage line" : "Stage line"))
+			@menu_stage_line.enable(!@menu_data[1].empty?)
+			@list.popup_menu(@list_menu)
 		end
 
 		def on_menu_stage_chunk(event)
@@ -127,11 +133,8 @@ module Fugit
 		end
 
 		def on_double_click(event)
-			i = event.get_item
-			unless @root == i
-				menu_data = @list.get_item_data(i)
-				apply_diff(menu_data[1], menu_data[2]) if menu_data
-			end
+			menu_data = event.get_item.get_data
+			apply_diff(menu_data[1], menu_data[2]) if menu_data
 		end
 
 		def apply_diff(diff, type)
