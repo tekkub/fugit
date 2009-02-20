@@ -49,8 +49,9 @@ module Fugit
 			branches = `git branch`
 			remotes = `git remote`
 			@remote.clear
-			remotes.split("\n").each {|r| @remote.append(r)}
-			@remote.set_value(@remote.get_string(0))
+			remotes = remotes.split("\n")
+			remotes.each {|r| @remote.append(r)}
+			@remote.set_value(remotes.include?("origin") ? "origin" : remotes[0])
 			current = branches.match(/\* (.+)/).to_a.last
 			branches = branches.split("\n").map {|b| b.split(" ").last}
 			@branch_list.set(branches)
