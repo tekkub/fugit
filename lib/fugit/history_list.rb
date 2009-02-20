@@ -26,10 +26,14 @@ module Fugit
 			@list.clear_all
 
 			@list.insert_column(0, "Graph")
-			@list.insert_column(1, "SHA1")
-			@list.insert_column(2, "Commit note")
+			@list.insert_column(1, "Branches")
+			@list.insert_column(2, "SHA1")
+			@list.insert_column(3, "Commit note")
 
 			mono_font = Font.new(8, FONTFAMILY_TELETYPE, FONTSTYLE_NORMAL, FONTWEIGHT_NORMAL)
+
+			branches = `git branch -v --no-abbrev`
+			branches = branches.split("\n").map {|b| [b[2..-1].split(" ")[0..1], b[0..0] == "*"].flatten}
 
 			output = `git log --pretty=format:"%H\t%P\t%s" --date-order --all`
 			lines = output.split("\n").map! {|line| line.split("\t")}
@@ -37,15 +41,18 @@ module Fugit
 
 			log.each_index do |i|
 				(graph, comment, sha) = log[i]
+				comment_branches = branches.reject {|b| b[1] != sha}.map {|b| (b.last ? "*" : "") + b.first}
 				@list.insert_item(i, sha)
 				@list.set_item(i, 0, graph)
-				@list.set_item(i, 1, sha[0..7])
-				@list.set_item(i, 2, (comment.nil? || comment.empty?) ? "<No comment>" : comment)
+				@list.set_item(i, 1, comment_branches.join(" "))
+				@list.set_item(i, 2, sha[0..7])
+				@list.set_item(i, 3, (comment.nil? || comment.empty?) ? "<No comment>" : comment)
 			end
 
 			@list.set_column_width(0, -1)
 			@list.set_column_width(1, -1)
-			@list.set_column_width(2, -2)
+			@list.set_column_width(2, -1)
+			@list.set_column_width(3, -1)
 
 			@list.show
 			@has_initialized = true
