@@ -54,7 +54,9 @@ module Fugit
 			end
 
 			@list.set_column_width(0, -1)
+			@list.set_column_width(0, [150, @list.get_column_width(0)].min)
 			@list.set_column_width(1, -1)
+			@list.set_column_width(1, [150, @list.get_column_width(1)].min)
 			@list.set_column_width(2, -1)
 			@list.set_column_width(3, -1)
 
