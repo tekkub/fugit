@@ -19,10 +19,7 @@ module Fugit
 
 			evt_list_item_right_click(@list.get_id, :on_list_menu_request)
 
-			register_for_message(:history_tab_shown) do
-				update_list unless @has_initialized
-				@list.set_focus
-			end
+			register_for_message(:history_tab_shown, :update_list)
 			register_for_message(:refresh) {update_list if is_shown_on_screen}
 			register_for_message(:exiting) {self.hide} # Things seem to run smoother if we hide before destruction
 		end
@@ -62,7 +59,7 @@ module Fugit
 			@list.set_column_width(3, -1)
 
 			@list.show
-			@has_initialized = true
+			@list.set_focus
 		end
 
 		def on_list_menu_request(event)
