@@ -1,5 +1,6 @@
 # encoding: utf-8
 include Wx
+include IconLoader
 include Fugit::GraphRenderer
 
 module Fugit
@@ -11,7 +12,9 @@ module Fugit
 			@list = ListCtrl.new(self, ID_ANY, :style => LC_REPORT|LC_VRULES|NO_BORDER)
 
 			@list_menu = Menu.new
-			@menu_create_branch = @list_menu.append('Create new branch here')
+			@menu_create_branch = MenuItem.new(@list_menu, ID_ANY, 'Create new branch here')
+			@menu_create_branch.set_bitmap(get_icon("arrow_divide.png"))
+			@list_menu.append_item(@menu_create_branch)
 			evt_menu(@menu_create_branch, :on_menu_create_branch)
 			@box = BoxSizer.new(VERTICAL)
 			@box.add(@list, 1, EXPAND)
