@@ -10,9 +10,14 @@ module Fugit
 
 			@list = ListCtrl.new(self, ID_ANY, :style => LC_REPORT|LC_VRULES|NO_BORDER)
 
+			@list_menu = Menu.new
+			@menu_create_branch = @list_menu.append('Create new branch here')
+			evt_menu(@menu_create_branch, :on_menu_create_branch)
 			@box = BoxSizer.new(VERTICAL)
 			@box.add(@list, 1, EXPAND)
 			self.set_sizer(@box)
+
+			evt_list_item_right_click(@list.get_id, :on_list_menu_request)
 
 			register_for_message(:history_tab_shown) do
 				update_list unless @has_initialized
@@ -48,6 +53,7 @@ module Fugit
 				@list.set_item(i, 1, comment_branches.join(" "))
 				@list.set_item(i, 2, sha[0..7])
 				@list.set_item(i, 3, (comment.nil? || comment.empty?) ? "<No comment>" : comment)
+				@list.set_item_data(i, sha)
 			end
 
 			@list.set_column_width(0, -1)
@@ -57,6 +63,24 @@ module Fugit
 
 			@list.show
 			@has_initialized = true
+		end
+
+		def on_list_menu_request(event)
+			@menu_data = event.get_item.get_data
+			@list.popup_menu(@list_menu)
+		end
+
+		def on_menu_create_branch(event)
+			@new_branch_dialog ||= TextEntryDialog.new(self, "New branch name:", "Create branch")
+			@new_branch_dialog.set_value("")
+			if @new_branch_dialog.show_modal == ID_OK
+				err = `git branch #{@new_branch_dialog.get_value} #{@menu_data} 2>&1`
+				if err.empty?
+					send_message(:refresh)
+				else
+					MessageDialog.new(self, err, "Error creating branch", OK|ICON_ERROR).show_modal
+				end
+			end
 		end
 
 	end
