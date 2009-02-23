@@ -142,8 +142,12 @@ module Fugit
 			reverse = (type == :staged ? "--reverse" : "")
 			diff_file = File.join(Dir.pwd, ".git", "fugit_partial.diff")
 			File.open(diff_file, "wb") {|f| f << diff} # Write out in binary mode to preserve newlines, otherwise git freaks out
-			`git apply --cached #{reverse} .git/fugit_partial.diff`
-			send_message(:index_changed)
+			err = `git apply --cached #{reverse} .git/fugit_partial.diff  2>&1`
+			if err.empty?
+				send_message(:index_changed)
+			else
+				MessageDialog.new(self, err, "Error applying diff", OK|ICON_ERROR).show_modal
+			end
 		end
 	end
 end
