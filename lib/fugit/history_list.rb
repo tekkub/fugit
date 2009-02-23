@@ -37,7 +37,7 @@ module Fugit
 			@list.hide
 			@list.clear_all
 
-			@list.insert_column(0, "Graph")
+			@list.insert_column(0, "")
 			@list.insert_column(1, "Branches")
 			@list.insert_column(2, "SHA1")
 			@list.insert_column(3, "Commit note")
