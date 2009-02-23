@@ -93,10 +93,10 @@ module Fugit
 
 		def on_menu_cherry_pick(event)
 			err = `git cherry-pick  #{@menu_data} 2>&1`
-			if err.empty?
-				send_message(:refresh)
-			else
+			if err =~ /Automatic cherry-pick failed/
 				MessageDialog.new(self, err, "Error cherry-picking", OK|ICON_ERROR).show_modal
+			else
+				send_message(:refresh)
 			end
 		end
 
