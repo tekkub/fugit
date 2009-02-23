@@ -22,6 +22,14 @@ module Fugit
 			@list_menu.append_item(@menu_cherry_pick)
 			evt_menu(@menu_cherry_pick, :on_menu_cherry_pick)
 
+			@list_menu.append_separator
+
+			@menu_soft_reset = @list_menu.append('Soft-reset branch to here')
+			evt_menu(@menu_soft_reset, :on_menu_soft_reset)
+
+			@menu_mixed_reset = @list_menu.append('Mixed-reset branch to here')
+			evt_menu(@menu_mixed_reset, :on_menu_mixed_reset)
+
 			@menu_hard_reset = MenuItem.new(@list_menu, ID_ANY, 'Hard-reset branch to here')
 			@menu_hard_reset.set_bitmap(get_icon("arrow_undo.png"))
 			@list_menu.append_item(@menu_hard_reset)
@@ -103,6 +111,24 @@ module Fugit
 			else
 				send_message(:refresh)
 			end
+		end
+
+		def on_menu_soft_reset(event)
+			err = `git reset --soft  #{@menu_data} 2>&1`
+			if !err.empty?
+				MessageDialog.new(self, err, "Error resetting", OK|ICON_ERROR).show_modal
+			else
+				send_message(:refresh)
+			end
+		end
+
+		def on_menu_mixed_reset(event)
+			err = `git reset --mixed  #{@menu_data} 2>&1`
+			#~ if !(err =~ /HEAD is now at/)
+				#~ MessageDialog.new(self, err, "Error resetting", OK|ICON_ERROR).show_modal
+			#~ else
+				send_message(:refresh)
+			#~ end
 		end
 
 		def on_menu_hard_reset(event)
