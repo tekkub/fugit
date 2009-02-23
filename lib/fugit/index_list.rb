@@ -55,7 +55,7 @@ module Fugit
 
 			evt_tree_item_collapsing(@index.get_id) {|event| event.veto}
 
-			register_for_message(:refresh, :update_tree)
+			register_for_message(:refresh) {update_tree if is_shown_on_screen}
 			register_for_message(:commit_saved, :update_tree)
 			register_for_message(:index_changed, :update_tree)
 			register_for_message(:exiting) {self.hide} # Things seem to run smoother if we hide before destruction

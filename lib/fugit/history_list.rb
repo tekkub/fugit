@@ -18,6 +18,7 @@ module Fugit
 				update_list unless @has_initialized
 				@list.set_focus
 			end
+			register_for_message(:refresh) {update_list if is_shown_on_screen}
 			register_for_message(:exiting) {self.hide} # Things seem to run smoother if we hide before destruction
 		end
 
