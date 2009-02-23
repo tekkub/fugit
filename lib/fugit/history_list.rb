@@ -22,6 +22,11 @@ module Fugit
 			@list_menu.append_item(@menu_cherry_pick)
 			evt_menu(@menu_cherry_pick, :on_menu_cherry_pick)
 
+			@menu_hard_reset = MenuItem.new(@list_menu, ID_ANY, 'Hard-reset branch to here')
+			@menu_hard_reset.set_bitmap(get_icon("arrow_undo.png"))
+			@list_menu.append_item(@menu_hard_reset)
+			evt_menu(@menu_hard_reset, :on_menu_hard_reset)
+
 			@box = BoxSizer.new(VERTICAL)
 			@box.add(@list, 1, EXPAND)
 			self.set_sizer(@box)
@@ -95,6 +100,15 @@ module Fugit
 			err = `git cherry-pick  #{@menu_data} 2>&1`
 			if err =~ /Automatic cherry-pick failed/
 				MessageDialog.new(self, err, "Error cherry-picking", OK|ICON_ERROR).show_modal
+			else
+				send_message(:refresh)
+			end
+		end
+
+		def on_menu_hard_reset(event)
+			err = `git reset --hard  #{@menu_data} 2>&1`
+			if !(err =~ /HEAD is now at/)
+				MessageDialog.new(self, err, "Error resetting", OK|ICON_ERROR).show_modal
 			else
 				send_message(:refresh)
 			end
