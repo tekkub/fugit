@@ -32,12 +32,12 @@ module Fugit
 
 			mono_font = Font.new(8, FONTFAMILY_TELETYPE, FONTSTYLE_NORMAL, FONTWEIGHT_NORMAL)
 
-			branches = `git branch -v --no-abbrev`
+			branches = `git branch -v -a --no-abbrev`
 			branches = branches.split("\n").map {|b| [b[2..-1].split(" ")[0..1], b[0..0] == "*"].flatten}
 
 			output = `git log --pretty=format:"%H\t%P\t%s" --date-order --all`
 			lines = output.split("\n").map! {|line| line.split("\t")}
-			log = graphify(lines)
+			log = graphify(lines, branches)
 
 			log.each_index do |i|
 				(graph, comment, sha) = log[i]

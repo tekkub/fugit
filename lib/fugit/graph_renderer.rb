@@ -2,7 +2,9 @@
 
 module Fugit
 	module GraphRenderer
-		def graphify(commits)
+		def graphify(commits, branch_refs)
+			branch_refs = branch_refs.map {|b| b[1]}.uniq
+
 			graph = []
 			branch_parents = [commits.first[0]]
 			commits.each do |sha, parents, comment|
@@ -14,7 +16,7 @@ module Fugit
 					indicator = "│"
 					indicator = " " if parent.empty?
 					indicator = "┼" if parent_found && children.size > 1 && !parent.empty?
-					indicator = "●" if sha == parent && !parent_found
+					indicator = "○" if sha == parent && !parent_found
 					indicator = "┘" if sha == parent && parent_found
 					children.shift if sha == parent && parent_found
 					parent_found = true if sha == parent
@@ -35,7 +37,7 @@ module Fugit
 						branch_parents << p
 						branches << "┐" if sha_index
 					end
-					branches << "●" unless sha_index
+					branches << "○" unless sha_index
 					if parents.empty?
 						found = false
 						branchoffs = branches.select{|b| b == "┘"}
@@ -49,7 +51,7 @@ module Fugit
 								else
 									b
 								end
-							found ||= b == "●"
+							found ||= b == "○"
 							val
 						end
 						branches.reverse!
@@ -73,7 +75,7 @@ module Fugit
 								else
 									b
 								end
-							found = b == "●" if !found
+							found = b == "○" if !found
 							val
 						end
 					end
@@ -86,6 +88,7 @@ module Fugit
 					match
 				end
 				branch_parents.reverse!
+				branches.map! {|b| b == "○" ? "●" : b} if branch_refs.include?(sha)
 				graph << [branches.join, comment, sha]
 			end
 			graph
