@@ -149,14 +149,14 @@ module Fugit
 			children = @index.get_children(@unstaged).map {|child| @index.get_item_data(child)}
 			to_delete = children.reject {|file, change, status| change != :deleted}.map {|f,c,s| f}
 			to_add = children.map {|f,c,s| f} - to_delete
-			`git rm --cached "#{to_delete.join('" "')}"` unless to_delete.empty?
-			`git add "#{to_add.join('" "')}"` unless to_add.empty?
+			`git rm --cached "#{to_delete.join('" "')}" 2>&1` unless to_delete.empty?
+			`git add "#{to_add.join('" "')}" 2>&1` unless to_add.empty?
 			send_message(:index_changed)
 		end
 
 		def on_unstage_all_clicked(event)
 			children = @index.get_children(@staged).map {|child| @index.get_item_data(child)[0]}
-			`git reset "#{children.join('" "')}"` unless children.empty?
+			`git reset "#{children.join('" "')}" 2>&1` unless children.empty?
 			send_message(:index_changed)
 		end
 
@@ -212,12 +212,12 @@ module Fugit
 			when :unstaged
 				case change
 				when :deleted
-					`git rm --cached "#{file}"`
+					`git rm --cached "#{file}" 2>&1`
 				else
-					`git add "#{file}"`
+					`git add "#{file}" 2>&1`
 				end
 			when :staged
-				`git reset "#{file}"`
+				`git reset "#{file}" 2>&1`
 			end
 
 			send_message(:index_changed)
