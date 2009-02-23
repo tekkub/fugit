@@ -16,6 +16,12 @@ module Fugit
 			@menu_create_branch.set_bitmap(get_icon("arrow_divide.png"))
 			@list_menu.append_item(@menu_create_branch)
 			evt_menu(@menu_create_branch, :on_menu_create_branch)
+
+			@menu_cherry_pick = MenuItem.new(@list_menu, ID_ANY, 'Cherry-pick this commit')
+			@menu_cherry_pick.set_bitmap(get_icon("cherry.png"))
+			@list_menu.append_item(@menu_cherry_pick)
+			evt_menu(@menu_cherry_pick, :on_menu_cherry_pick)
+
 			@box = BoxSizer.new(VERTICAL)
 			@box.add(@list, 1, EXPAND)
 			self.set_sizer(@box)
@@ -82,6 +88,15 @@ module Fugit
 				else
 					MessageDialog.new(self, err, "Error creating branch", OK|ICON_ERROR).show_modal
 				end
+			end
+		end
+
+		def on_menu_cherry_pick(event)
+			err = `git cherry-pick  #{@menu_data} 2>&1`
+			if err.empty?
+				send_message(:refresh)
+			else
+				MessageDialog.new(self, err, "Error cherry-picking", OK|ICON_ERROR).show_modal
 			end
 		end
 
