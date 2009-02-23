@@ -45,6 +45,7 @@ module Fugit
 			@list.clear_all
 			@list.insert_column(0, "Graph")
 
+			reverse_diff = type == :staged ? ["-", "\\+"] : ["+", "-"]
 			last_id = -1
 			chunks.each do |chunk|
 				chunk_diff = header + "\n" + chunk
@@ -58,9 +59,9 @@ module Fugit
 							diff_val = chunk_lines.first.match(/\A@@ -\d+,(\d+)/)[1].to_i + (line[0..0] == "+" ? 1 : -1)
 							chunk_lines[0] = chunk_lines.first.gsub(/\+(\d+),\d+/, '+\1,' + diff_val.to_s)
 							chunk_lines.delete_at(i)
-							chunk_lines.map! {|l| l.gsub(/\A-/, " ")}
+							chunk_lines.map! {|l| l[0..0] == reverse_diff[0] ? "#{line}~~~DELETE~~~" : l.gsub(/\A#{reverse_diff[1]}/, " ")}
 							chunk_lines.insert(i, line)
-							chunk_lines.reject! {|l| l[0..0] == "+" && l != line}
+							chunk_lines.reject! {|l| l == "#{line}~~~DELETE~~~"}
 							header + "\n" + chunk_lines.join("\n") + "\n"
 						else
 							""
