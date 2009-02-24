@@ -3,7 +3,7 @@ include Wx
 module Fugit
 	class PushDialog < Dialog
 		def initialize(parent)
-			super(parent, ID_ANY, "Push branches", :size => Size.new(350, 500))
+			super(parent, ID_ANY, "Push branches", :size => Size.new(400, 500))
 
 			@branch_list = CheckListBox.new(self, ID_ANY)
 			@log = TextCtrl.new(self, ID_ANY, :size => Size.new(20, 150), :style => TE_MULTILINE|TE_DONTWRAP|TE_READONLY)
