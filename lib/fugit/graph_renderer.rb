@@ -17,6 +17,7 @@ module Fugit
 					indicator = " " if parent.empty?
 					indicator = "┼" if parent_found && children.size > 1 && !parent.empty?
 					indicator = "○" if sha == parent && !parent_found
+					indicator = "□" if sha == "uncomitted"
 					indicator = "┘" if sha == parent && parent_found
 					children.shift if sha == parent && parent_found
 					parent_found = true if sha == parent

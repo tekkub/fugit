@@ -64,6 +64,8 @@ module Fugit
 
 			output = `git log --pretty=format:"%H\t%P\t%s" --date-order --all`
 			lines = output.split("\n").map! {|line| line.split("\t")}
+			current_sha = branches.reject {|b| !b.last}.first[1]
+			lines.insert(0, ["uncomitted", current_sha, "<Uncomitted changes>"]) if has_uncomitted_changes?
 			log = graphify(lines, branches)
 
 			log.each_index do |i|
@@ -72,9 +74,10 @@ module Fugit
 				@list.insert_item(i, sha)
 				@list.set_item(i, 0, graph)
 				@list.set_item(i, 1, comment_branches.join(" "))
-				@list.set_item(i, 2, sha[0..7])
+				@list.set_item(i, 2, sha == "uncomitted" ? "" : sha[0..7])
 				@list.set_item(i, 3, (comment.nil? || comment.empty?) ? "<No comment>" : comment)
 				@list.set_item_data(i, sha)
+				@list.set_item_background_colour(i, Colour.new(255, 220, 220)) if sha == "uncomitted"
 			end
 
 			@list.set_column_width(0, -1)
