@@ -149,14 +149,13 @@ module Fugit
 			children = @index.get_children(@unstaged).map {|child| @index.get_item_data(child)}
 			to_delete = children.reject {|file, change, status| change != :deleted}.map {|f,c,s| f}
 			to_add = children.map {|f,c,s| f} - to_delete
-			`git rm --cached "#{to_delete.join('" "')}" 2>&1` unless to_delete.empty?
-			`git add "#{to_add.join('" "')}" 2>&1` unless to_add.empty?
+			`git add --update 2>&1` unless to_delete.empty? && to_add.empty?
 			send_message(:index_changed)
 		end
 
 		def on_unstage_all_clicked(event)
 			children = @index.get_children(@staged).map {|child| @index.get_item_data(child)[0]}
-			`git reset "#{children.join('" "')}" 2>&1` unless children.empty?
+			`git reset 2>&1` unless children.empty?
 			send_message(:index_changed)
 		end
 
