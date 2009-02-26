@@ -2,42 +2,51 @@ include Wx
 include IconLoader
 
 module Fugit
-	class Commit < Panel
+	class CommitDialog < Dialog
 		def initialize(parent)
-			super(parent, ID_ANY)
+			super(parent, ID_ANY, "Commit changes", :size => Size.new(500, 250))
 
 			@input = TextCtrl.new(self, ID_ANY, nil, nil, nil, TE_MULTILINE|TE_DONTWRAP)
 			@author = TextCtrl.new(self, ID_ANY)
 			@committer = TextCtrl.new(self, ID_ANY)
 			@committer.disable
+			@amend_check = CheckBox.new(self, ID_ANY)
 
-			box = BoxSizer.new(HORIZONTAL)
-			box.add(@committer, 1, EXPAND)
-			box.add(@author, 1, EXPAND)
-
-			flex = FlexGridSizer.new(2,2,0,0)
-			flex.add(StaticText.new(self, ID_ANY, "Committer/Author:"), 0, EXPAND)
-			flex.add(box, 0, EXPAND)
-			flex.add(StaticText.new(self, ID_ANY, "Commit message:"), 0, EXPAND)
+			flex = FlexGridSizer.new(4,2,4,4)
+			flex.add(StaticText.new(self, ID_ANY, "Committer:"), 0, ALIGN_RIGHT)
+			flex.add(@committer, 0, EXPAND)
+			flex.add(StaticText.new(self, ID_ANY, "Author:"), 0, ALIGN_RIGHT)
+			flex.add(@author, 0, EXPAND)
+			flex.add(StaticText.new(self, ID_ANY, "Commit message:"), 0, ALIGN_RIGHT)
 			flex.add(@input, 0, EXPAND)
-			flex.add_growable_row(1)
+			flex.add(@amend_check, 0, ALIGN_RIGHT)
+			flex.add(StaticText.new(self, ID_ANY, "Amend previous commit"), 0, EXPAND)
+			flex.add_growable_row(2)
 			flex.add_growable_col(1)
 
+			butt_sizer = create_button_sizer(OK|CANCEL)
+			butt_sizer.get_children.map {|s| s.get_window}.compact.each {|b| b.set_label("Commit") if b.get_label == "OK"}
+			evt_button(get_affirmative_id, :on_ok)
+
 			box = BoxSizer.new(VERTICAL)
-			box.add(flex, 1, EXPAND)
+			box.add(flex, 1, EXPAND|ALL, 4)
+			box.add(butt_sizer, 0, EXPAND|BOTTOM, 4)
 			self.set_sizer(box)
+		end
 
-			register_for_message(:make_commit, :on_commit_clicked)
-			register_for_message(:commit_saved, :on_commit_saved)
-			register_for_message(:refresh, :update)
-
+		def show_modal
 			name = `git config user.name`
 			email = `git config user.email`
 			@committer.set_value("#{name.chomp} <#{email.chomp}>")
 			@author.set_value("#{name.chomp} <#{email.chomp}>")
+			@input.set_value("")
+			@amend_check.set_value(false)
+			@input.set_focus
+
+			super
 		end
 
-		def on_commit_clicked
+		def on_ok
 			msg = @input.get_value
 			if !has_staged_changes?
 				@nothing_to_commit_error ||= MessageDialog.new(self, "No changes are staged to commit.", "Commit error", OK|ICON_ERROR)
@@ -48,17 +57,11 @@ module Fugit
 			else
 				commit_file = File.join(Dir.pwd, ".git", "fugit_commit.txt")
 				File.open(commit_file, "w") {|f| f << msg}
-				`git commit --file=.git/fugit_commit.txt --author="#{@author.get_value}"`
+				amend = @amend_check.is_checked ? "--amend " : ""
+				`git commit #{amend}--file=.git/fugit_commit.txt --author="#{@author.get_value}"`
 				File.delete(commit_file)
-				send_message(:commit_saved)
+				end_modal ID_OK
 			end
-		end
-
-		def on_commit_saved
-			name = `git config user.name`
-			email = `git config user.email`
-			@author.set_value("#{name.chomp} <#{email.chomp}>")
-			@input.set_value("")
 		end
 
 		def has_staged_changes?

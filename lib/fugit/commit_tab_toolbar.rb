@@ -25,7 +25,7 @@ module Fugit
 			self.add_separator
 
 			commit = self.add_tool(ID_ANY, "Commit", get_icon("disk.png"), "Commit")
-			evt_tool(commit) {|e| send_message(:make_commit)}
+			evt_tool(commit, :on_commit_clicked)
 
 			self.add_separator
 
@@ -46,6 +46,11 @@ module Fugit
 		def on_unstage_all_clicked(event)
 			`git reset 2>&1`
 			send_message(:index_changed)
+		end
+
+		def on_commit_clicked
+			@commit_dialog ||= CommitDialog.new(self)
+			send_message(:commit_saved) if @commit_dialog.show_modal == ID_OK
 		end
 
 		def on_push_clicked

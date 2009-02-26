@@ -9,17 +9,12 @@ module Fugit
 			@vsplitter = SplitterWindow.new(self, ID_ANY)
 			@vsplitter.set_minimum_pane_size(150)
 
-			@hsplitter = SplitterWindow.new(@vsplitter, ID_ANY)
-			@hsplitter.set_minimum_pane_size(150)
-			@hsplitter.set_sash_gravity(1.0)
 
 			@toolbar = CommitTabToolbar.new(self)
-			@diff = Diff.new(@hsplitter)
-			@commit = Commit.new(@hsplitter)
-			@hsplitter.split_horizontally(@diff, @commit)
+			@diff = Diff.new(@vsplitter)
 
 			@index = IndexList.new(@vsplitter)
-			@vsplitter.split_vertically(@index, @hsplitter, 200)
+			@vsplitter.split_vertically(@index, @diff, 200)
 
 			box = BoxSizer.new(VERTICAL)
 			box.add(@toolbar, 0, EXPAND)

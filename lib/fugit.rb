@@ -5,7 +5,7 @@ require 'wx'
 
 require "fugit/icon_loader"
 
-require "fugit/commit"
+require "fugit/commit_dialog"
 require "fugit/commit_tab"
 require "fugit/commit_tab_toolbar"
 require "fugit/console"
