@@ -12,6 +12,8 @@ module Fugit
 			@committer.disable
 			@amend_check = CheckBox.new(self, ID_ANY)
 
+			evt_checkbox(@amend_check, :on_amend_checked)
+
 			flex = FlexGridSizer.new(4,2,4,4)
 			flex.add(StaticText.new(self, ID_ANY, "Committer:"), 0, ALIGN_RIGHT)
 			flex.add(@committer, 0, EXPAND)
@@ -46,9 +48,17 @@ module Fugit
 			super
 		end
 
+		def on_amend_checked(event)
+			return unless event.is_checked && @input.get_value.empty?
+
+			raw_log = `git log -1 --pretty=raw`
+			@author.set_value($1) if raw_log =~ /author (.+>)/
+			@input.set_value($1.split("\n").map {|l| l.strip}.join("\n")) if raw_log =~ /\n\n    (.+)\n\Z/m
+		end
+
 		def on_ok
 			msg = @input.get_value
-			if !has_staged_changes?
+			if !has_staged_changes? && !@amend_check.is_checked
 				@nothing_to_commit_error ||= MessageDialog.new(self, "No changes are staged to commit.", "Commit error", OK|ICON_ERROR)
 				@nothing_to_commit_error.show_modal
 			elsif msg.empty?
