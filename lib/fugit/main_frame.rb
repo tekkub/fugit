@@ -24,7 +24,7 @@ module Fugit
 			icon_file = File.expand_path(File.join(IconBasePath, "plus_minus.gif"))
 			self.icon = Icon.new(icon_file, BITMAP_TYPE_GIF)
 
-			evt_notebook_page_changed(@notebook) {|event| send_message(:history_tab_shown) if event.get_selection == 1}
+			evt_notebook_page_changed(@notebook) {|event| send_message(:tab_switch)}
 
 			menu_bar = MenuBar.new
 
