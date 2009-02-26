@@ -35,7 +35,29 @@ module Fugit
 			pull = self.add_tool(ID_ANY, "Pull", get_icon("page_down.gif"), "Pull")
 			self.enable_tool(pull.get_id, false)
 
+			self.add_separator
+
+			self.add_control(@branch = Choice.new(self, ID_ANY))
+			set_branches
+			evt_choice(@branch, :on_branch_choice)
+
 			self.realize
+
+			register_for_message(:tab_switch, :update_tools)
+			register_for_message(:refresh, :update_tools)
+		end
+
+		def update_tools
+			return unless is_shown_on_screen
+			set_branches
+		end
+
+		def set_branches
+			branches = `git branch`
+			current = branches.match(/\* (.+)/).to_a.last
+			@branch.clear
+			branches.split("\n").each {|b| @branch.append(b.split(" ").last)}
+			@branch.set_string_selection(current) if current
 		end
 
 		def on_stage_all_clicked(event)
@@ -56,6 +78,19 @@ module Fugit
 		def on_push_clicked
 			@push_dialog ||= PushDialog.new(self)
 			@push_dialog.show
+		end
+
+		def on_branch_choice(event)
+			branch = @branch.get_string(event.get_selection)
+			err = `git checkout #{branch} 2>&1`
+			if err =~ /Switched to branch "#{branch}"/
+				send_message(:branch_checkout)
+			else
+				MessageDialog.new(self, err, "Branch checkout error", OK|ICON_ERROR).show_modal
+				branches = `git branch`
+				current = branches.match(/\* (.+)/).to_a.last
+				@branch.set_string_selection(current) if current
+			end
 		end
 
 	end
