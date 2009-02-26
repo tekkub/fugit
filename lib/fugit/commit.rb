@@ -11,15 +11,6 @@ module Fugit
 			@committer = TextCtrl.new(self, ID_ANY)
 			@committer.disable
 
-			@toolbar = ToolBar.new(self, ID_ANY)
-			@toolbar.set_tool_bitmap_size(Size.new(16,16))
-			@toolbar.add_tool(101, "Commit", get_icon("disk.png"), "Commit")
-			@toolbar.add_tool(102, "Sign off", get_icon("text_signature.png"), "Sign off")
-			@toolbar.add_separator
-			@toolbar.add_tool(103, "Push", get_icon("page_up.gif"), "Push")
-			#~ @toolbar.add_tool(104, "Pull", get_icon("page_down.gif"), "Pull")
-			@toolbar.realize
-
 			box = BoxSizer.new(HORIZONTAL)
 			box.add(@committer, 1, EXPAND)
 			box.add(@author, 1, EXPAND)
@@ -33,15 +24,10 @@ module Fugit
 			flex.add_growable_col(1)
 
 			box = BoxSizer.new(VERTICAL)
-			box.add(@toolbar, 0, EXPAND)
-			box.add_spacer(4)
 			box.add(flex, 1, EXPAND)
 			self.set_sizer(box)
 
-			evt_tool(101, :on_commit_clicked)
-			evt_tool(103, :on_push_clicked)
-
-			register_for_message(:save_clicked, :on_commit_clicked)
+			register_for_message(:make_commit, :on_commit_clicked)
 			register_for_message(:commit_saved, :on_commit_saved)
 			register_for_message(:refresh, :update)
 
@@ -93,11 +79,6 @@ module Fugit
 			end
 			staged.reject! {|file, sha| committed[file] == sha}
 			!staged.empty?
-		end
-
-		def on_push_clicked
-			@push_dialog ||= PushDialog .new(self)
-			@push_dialog.show
 		end
 
 	end
