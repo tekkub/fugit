@@ -134,12 +134,45 @@ module Fugit
 		end
 
 		def on_menu_hard_reset(event)
+			if has_uncomitted_changes?
+				@uncomitted_hard_dialog ||= MessageDialog.new(self, "Uncommitted changes will be lost, continue?", "Uncomitted changes", YES_NO|NO_DEFAULT|ICON_EXCLAMATION)
+				return if @uncomitted_hard_dialog.show_modal != ID_YES
+			end
+
 			err = `git reset --hard  #{@menu_data} 2>&1`
 			if !(err =~ /HEAD is now at/)
 				MessageDialog.new(self, err, "Error resetting", OK|ICON_ERROR).show_modal
 			else
 				send_message(:refresh)
 			end
+		end
+
+		def has_uncomitted_changes?
+			deleted = `git ls-files --deleted`
+			modified = `git ls-files --modified`
+			staged = `git ls-files --stage`
+			last_commit = `git ls-tree -r HEAD`
+
+			committed = {}
+			last_commit.split("\n").map do |line|
+				(info, file) = line.split("\t")
+				sha = info.match(/[a-f0-9]{40}/)[0]
+				committed[file] = sha
+			end
+
+			deleted = deleted.split("\n")
+			modified = modified.split("\n")
+			staged = staged.split("\n").map do |line|
+				(info, file) = line.split("\t")
+				sha = info.match(/[a-f0-9]{40}/)[0]
+				[file, sha]
+			end
+			committed.each_pair do |file, sha|
+				staged << [file, ""] unless staged.assoc(file)
+			end
+			staged.reject! {|file, sha| committed[file] == sha}
+
+			return !(deleted + modified + staged).empty?
 		end
 
 	end
