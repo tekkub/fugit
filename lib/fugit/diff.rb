@@ -3,7 +3,7 @@ include Wx
 module Fugit
 	class Diff < Panel
 		def initialize(parent)
-			super(parent, ID_ANY)
+			super(parent, ID_ANY, :style => SIMPLE_BORDER)
 			self.set_font(Font.new(8, FONTFAMILY_TELETYPE, FONTSTYLE_NORMAL, FONTWEIGHT_NORMAL))
 
 			@list = ListCtrl.new(self, ID_ANY, :style => LC_REPORT|LC_VRULES|NO_BORDER|LC_NO_HEADER)

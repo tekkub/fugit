@@ -13,6 +13,7 @@ module Fugit
 			@hsplitter.set_minimum_pane_size(150)
 			@hsplitter.set_sash_gravity(1.0)
 
+			@toolbar = CommitTabToolbar.new(self)
 			@diff = Diff.new(@hsplitter)
 			@commit = Commit.new(@hsplitter)
 			@hsplitter.split_horizontally(@diff, @commit)
@@ -21,6 +22,8 @@ module Fugit
 			@vsplitter.split_vertically(@index, @hsplitter, 200)
 
 			box = BoxSizer.new(VERTICAL)
+			box.add(@toolbar, 0, EXPAND)
+			box.add_spacer(3)
 			box.add(@vsplitter, 1, EXPAND)
 			self.set_sizer(box)
 

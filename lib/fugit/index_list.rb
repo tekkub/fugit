@@ -6,7 +6,7 @@ module Fugit
 		def initialize(parent)
 			super(parent, ID_ANY)
 
-			@index = TreeCtrl.new(self, ID_ANY, nil, nil, NO_BORDER|TR_MULTIPLE|TR_HIDE_ROOT|TR_FULL_ROW_HIGHLIGHT|TR_NO_LINES)
+			@index = TreeCtrl.new(self, ID_ANY, nil, nil, TR_MULTIPLE|TR_HIDE_ROOT|TR_FULL_ROW_HIGHLIGHT|TR_NO_LINES)
 
 			imagelist = ImageList.new(16, 16)
 			imagelist << get_icon("asterisk_yellow.png")
@@ -23,15 +23,6 @@ module Fugit
 			@index.set_item_bold(@unstaged)
 			@index.set_item_bold(@staged)
 
-			@toolbar = ToolBar.new(self, ID_ANY, nil, nil, TB_HORIZONTAL|NO_BORDER|TB_NODIVIDER)
-			@toolbar.set_tool_bitmap_size(Size.new(16,16))
-			stage_all_button = @toolbar.add_tool(ID_ANY, "Stage all", get_icon("folder_add.png"), "Stage all")
-			stage_button = @toolbar.add_tool(ID_ANY, "Stage", get_icon("page_add.png"), "Stage file")
-			@toolbar.add_separator
-			unstage_button = @toolbar.add_tool(ID_ANY, "Unstage", get_icon("page_delete.png"), "Unstage file")
-			unstage_all_button = @toolbar.add_tool(ID_ANY, "Unstage all", get_icon("folder_delete.png"), "Unstage all")
-			@toolbar.realize
-
 			@unstaged_menu = Menu.new
 			@menu_stage_file = @unstaged_menu.append('Stage file')
 			@menu_revert_changes = @unstaged_menu.append('Revert changes')
@@ -43,15 +34,11 @@ module Fugit
 			evt_tree_item_menu(@index.get_id, :on_menu_request)
 
 			box = BoxSizer.new(VERTICAL)
-			box.add(@toolbar, 0, EXPAND)
 			box.add(@index, 1, EXPAND)
 			self.set_sizer(box)
 
 			evt_tree_sel_changed(@index.get_id, :on_click)
 			evt_tree_item_activated(@index.get_id, :on_double_click)
-
-			evt_tool(stage_all_button, :on_stage_all_clicked)
-			evt_tool(unstage_all_button, :on_unstage_all_clicked)
 
 			evt_tree_item_collapsing(@index.get_id) {|event| event.veto}
 
@@ -143,20 +130,6 @@ module Fugit
 			unless i == @unstaged || i == @staged
 				process_staging(*@index.get_item_data(i))
 			end
-		end
-
-		def on_stage_all_clicked(event)
-			children = @index.get_children(@unstaged).map {|child| @index.get_item_data(child)}
-			to_delete = children.reject {|file, change, status| change != :deleted}.map {|f,c,s| f}
-			to_add = children.map {|f,c,s| f} - to_delete
-			`git add --update 2>&1` unless to_delete.empty? && to_add.empty?
-			send_message(:index_changed)
-		end
-
-		def on_unstage_all_clicked(event)
-			children = @index.get_children(@staged).map {|child| @index.get_item_data(child)[0]}
-			`git reset 2>&1` unless children.empty?
-			send_message(:index_changed)
 		end
 
 		def set_diff(file, change, status)
