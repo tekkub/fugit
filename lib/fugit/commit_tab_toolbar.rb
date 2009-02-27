@@ -36,6 +36,9 @@ module Fugit
 			set_branches
 			evt_choice(@branch, :on_branch_choice)
 
+			merge_branch_button = self.add_tool(ID_ANY, "Merge branch", get_icon("arrow_join.png"), "Merge branch")
+			self.enable_tool(merge_branch_button.get_id, false)
+
 			self.realize
 
 			register_for_message(:tab_switch, :update_tools)
