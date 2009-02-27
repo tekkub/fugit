@@ -45,6 +45,7 @@ module Fugit
 
 			register_for_message(:tab_switch, :update_tools)
 			register_for_message(:refresh, :update_tools)
+			register_for_message(:save_clicked, :on_commit_clicked)
 		end
 
 		def update_tools
