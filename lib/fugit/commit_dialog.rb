@@ -7,10 +7,11 @@ module Fugit
 			super(parent, ID_ANY, "Commit changes", :size => Size.new(500, 250))
 
 			@input = TextCtrl.new(self, ID_ANY, nil, nil, nil, TE_MULTILINE|TE_DONTWRAP)
+			@amend_check = CheckBox.new(self, ID_ANY)
+			@amend_check.set_label("&Amend previous commit")
 			@author = TextCtrl.new(self, ID_ANY)
 			@committer = TextCtrl.new(self, ID_ANY)
 			@committer.disable
-			@amend_check = CheckBox.new(self, ID_ANY)
 
 			evt_checkbox(@amend_check, :on_amend_checked)
 
@@ -21,8 +22,8 @@ module Fugit
 			flex.add(@author, 0, EXPAND)
 			flex.add(StaticText.new(self, ID_ANY, "Commit message:"), 0, ALIGN_RIGHT)
 			flex.add(@input, 0, EXPAND)
-			flex.add(@amend_check, 0, ALIGN_RIGHT)
-			flex.add(StaticText.new(self, ID_ANY, "Amend previous commit"), 0, EXPAND)
+			flex.add(1,1) # Filler
+			flex.add(@amend_check, 0)
 			flex.add_growable_row(2)
 			flex.add_growable_col(1)
 
