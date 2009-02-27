@@ -39,9 +39,13 @@ module Fugit
 			merge_branch_button = self.add_tool(ID_ANY, "Merge branch", get_icon("arrow_join.png"), "Merge branch")
 			self.enable_tool(merge_branch_button.get_id, false)
 
+			delete_branch_button = self.add_tool(ID_ANY, "Delete branch", get_icon("arrow_divide_delete.png"), "Delete branch")
+			evt_tool(delete_branch_button, :on_delete_branch_clicked)
+
 			self.realize
 
 			register_for_message(:tab_switch, :update_tools)
+			register_for_message(:branch_deleted, :update_tools)
 			register_for_message(:refresh, :update_tools)
 			register_for_message(:save_clicked, :on_commit_clicked)
 			register_for_message(:push_clicked, :on_push_clicked)
@@ -96,6 +100,11 @@ module Fugit
 				current = branches.match(/\* (.+)/).to_a.last
 				@branch.set_string_selection(current) if current
 			end
+		end
+
+		def on_delete_branch_clicked
+			@delete_branch_dialog ||= DeleteBranchDialog.new(self)
+			@delete_branch_dialog.show
 		end
 
 	end
