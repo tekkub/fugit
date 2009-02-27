@@ -34,6 +34,8 @@ module Fugit
 			box.add(flex, 1, EXPAND|ALL, 4)
 			box.add(butt_sizer, 0, EXPAND|BOTTOM, 4)
 			self.set_sizer(box)
+
+			self.accelerator_table = AcceleratorTable.new(AcceleratorEntry.new(MOD_CMD, ?s, ID_OK))
 		end
 
 		def show_modal
