@@ -6,22 +6,13 @@ module Fugit
 			super(parent, ID_ANY, "Push branches", :size => Size.new(400, 500))
 
 			@branch_list = CheckListBox.new(self, ID_ANY)
+			@tag_check = CheckBox.new(self, ID_ANY)
+			@tag_check.set_label("Include &tags")
+			@force_check = CheckBox.new(self, ID_ANY)
+			@force_check.set_label("&Force update")
+			@remote = ComboBox.new(self, ID_ANY)
 			@log = TextCtrl.new(self, ID_ANY, :size => Size.new(20, 150), :style => TE_MULTILINE|TE_DONTWRAP|TE_READONLY)
 			@progress = Gauge.new(self, ID_ANY, 100, :size => Size.new(20, 20))
-
-			@remote = ComboBox.new(self, ID_ANY)
-
-			check_panel = Panel.new(self, ID_ANY)
-			@tag_check = CheckBox.new(check_panel, ID_ANY)
-			@force_check = CheckBox.new(check_panel, ID_ANY)
-
-			flex = FlexGridSizer.new(1,2,4,4)
-			flex.add(@tag_check, 0, EXPAND)
-			flex.add(StaticText.new(check_panel, ID_ANY, "Include tags"), 0, EXPAND)
-			flex.add(@force_check, 0, EXPAND)
-			flex.add(StaticText.new(check_panel, ID_ANY, "Force update"), 0, EXPAND)
-
-			check_panel.set_sizer(flex)
 
 			butt_sizer = create_button_sizer(OK|CANCEL)
 			butt_sizer.get_children.map {|s| s.get_window}.compact.each {|b| b.set_label(b.get_label == "OK" ? "Push" : "Close")}
@@ -29,9 +20,13 @@ module Fugit
 
 			box = BoxSizer.new(VERTICAL)
 			box2 = BoxSizer.new(HORIZONTAL)
+			box3 = BoxSizer.new(VERTICAL)
+
+			box3.add(@tag_check, 1)
+			box3.add(@force_check, 1, TOP, 4)
 
 			box2.add(@branch_list, 1, EXPAND|LEFT|RIGHT|BOTTOM, 4)
-			box2.add(check_panel, 1)
+			box2.add(box3, 1, ALL, 4)
 
 			box.add(StaticText.new(self, ID_ANY, "Select branches:"), 0, EXPAND|ALL, 4)
 			box.add(box2, 1, EXPAND)
