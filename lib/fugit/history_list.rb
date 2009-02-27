@@ -78,6 +78,7 @@ module Fugit
 				@list.set_item(i, 3, (comment.nil? || comment.empty?) ? "<No comment>" : comment)
 				@list.set_item_data(i, sha)
 				@list.set_item_background_colour(i, Colour.new(255, 220, 220)) if sha == "uncomitted"
+				@list.set_item_background_colour(i, Colour.new(220, 220, 225)) if comment_branches.join =~ /\*/
 			end
 
 			@list.set_column_width(0, -1)
