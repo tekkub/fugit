@@ -32,6 +32,7 @@ module Fugit
 			menu_file = Menu.new
 			# Using ID_EXIT standard id means the menu item will be given the right label for the platform and language, and placed in the correct platform-specific menu - eg on OS X, in the Application's menu
 			menu_file.append(ID_SAVE, "&Save commit\tCtrl-S", "Save commit")
+			push = menu_file.append(ID_ANY, "&Push\tCtrl-P", "Push commits to a remote repo")
 			refresh = menu_file.append(ID_ANY, "&Refresh\tF5", "Refresh the index list")
 			menu_file.append(ID_EXIT, "E&xit", "Quit this program")
 			menu_bar.append(menu_file, "&File")
@@ -45,6 +46,7 @@ module Fugit
 			self.menu_bar = menu_bar
 
 			evt_menu(ID_SAVE) {|event| send_message(:save_clicked)}
+			evt_menu(push) {|event| send_message(:push_clicked)}
 			evt_menu(refresh) {|event| send_message(:refresh)}
 			evt_menu(ID_EXIT) {|event| close} # End the application; it should finish automatically when the last window is closed.
 			evt_menu(ID_ABOUT) do |event|
