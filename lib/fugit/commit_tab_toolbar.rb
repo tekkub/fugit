@@ -11,13 +11,8 @@ module Fugit
 			stage_all_button = self.add_tool(ID_ANY, "Stage all", get_icon("folder_add.png"), "Stage all")
 			evt_tool(stage_all_button, :on_stage_all_clicked)
 
-			stage_button = self.add_tool(ID_ANY, "Stage", get_icon("page_add.png"), "Stage file")
-			self.enable_tool(stage_button.get_id, false)
-
-			self.add_separator
-
-			unstage_button = self.add_tool(ID_ANY, "Unstage", get_icon("page_delete.png"), "Unstage file")
-			self.enable_tool(unstage_button.get_id, false)
+			stage_button = self.add_tool(ID_ANY, "Stage", get_icon("page_add.png"), "Stage changed files")
+			evt_tool(stage_button, :on_stage_changed_clicked)
 
 			unstage_all_button = self.add_tool(ID_ANY, "Unstage all", get_icon("folder_delete.png"), "Unstage all")
 			evt_tool(unstage_all_button, :on_unstage_all_clicked)
@@ -63,6 +58,11 @@ module Fugit
 		end
 
 		def on_stage_all_clicked(event)
+			`git add --all 2>&1`
+			send_message(:index_changed)
+		end
+
+		def on_stage_changed_clicked(event)
 			`git add --update 2>&1`
 			send_message(:index_changed)
 		end
