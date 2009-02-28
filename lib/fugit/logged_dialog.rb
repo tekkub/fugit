@@ -23,6 +23,7 @@ module Fugit
 		end
 
 		def run_command(command, close_on_success = true)
+			@progress.pulse
 			@log.append_text("#{@log.get_last_position == 0 ? "" : "\n"}> #{command}\n")
 
 			ret = IO.popen("#{command} 2>&1") do |io|
