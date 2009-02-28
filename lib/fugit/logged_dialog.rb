@@ -14,17 +14,14 @@ module Fugit
 			self.set_sizer(box)
 		end
 
-		def show_modal(command)
-			self.show
-			run_command(command)
-			super()
-		end
-
-		def run_command(command)
+		def show()
 			@progress.set_value(0)
 			@log.clear
+			super
+		end
 
-			@log.append_text("> #{command}\n")
+		def run_command(command, close_on_success = true)
+			@log.append_text("#{@log.get_last_position == 0 ? "" : "\n"}> #{command}\n")
 
 			ret = IO.popen("#{command} 2>&1") do |io|
 				last_cr = nil
@@ -41,7 +38,7 @@ module Fugit
 				end
 			end
 			@progress.set_value(0)
-			if $?.success?
+			if $?.success? && close_on_success
 				@log.append_text("\n\nThis window will close in 5 seconds\n")
 				Timer.after(5000) {self.end_modal(ID_OK)}
 			end

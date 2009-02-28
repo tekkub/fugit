@@ -27,8 +27,8 @@ module Fugit
 			push = self.add_tool(ID_ANY, "Push", get_icon("page_up.gif"), "Push")
 			evt_tool(push, :on_push_clicked)
 
-			pull = self.add_tool(ID_ANY, "Pull", get_icon("page_down.gif"), "Pull")
-			self.enable_tool(pull.get_id, false)
+			fetch = self.add_tool(ID_ANY, "Fetch", get_icon("page_down.gif"), "Fetch")
+			evt_tool(fetch, :on_fetch_clicked)
 
 			self.add_separator
 
@@ -87,6 +87,11 @@ module Fugit
 		def on_push_clicked
 			@push_dialog ||= PushDialog.new(self)
 			@push_dialog.show
+		end
+
+		def on_fetch_clicked
+			@fetch_dialog ||= FetchDialog.new(self)
+			@fetch_dialog.show
 		end
 
 		def on_branch_choice(event)
