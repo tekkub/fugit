@@ -36,8 +36,9 @@ module Fugit
 				end
 			end
 			@progress.set_value(0)
+			@log.append_text(@current_line.get_label)
+			@current_line.set_label("")
 			if $?.success? && close_on_success
-				@log.append_text(@current_line.get_label)
 				@current_line.set_label("This window will close in 5 seconds")
 				Timer.after(5000) {self.end_modal(ID_OK)}
 			end
