@@ -10,7 +10,7 @@ module Fugit
 			@vsplitter.set_minimum_pane_size(150)
 
 
-			@toolbar = CommitTabToolbar.new(self)
+			@toolbar = TabToolbar.new(self)
 			@diff = Diff.new(@vsplitter)
 
 			@index = IndexList.new(@vsplitter)

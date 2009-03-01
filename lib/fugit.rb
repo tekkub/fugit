@@ -7,7 +7,6 @@ require "fugit/icon_loader"
 
 require "fugit/commit_dialog"
 require "fugit/commit_tab"
-require "fugit/commit_tab_toolbar"
 require "fugit/console"
 require "fugit/delete_branch_dialog"
 require "fugit/diff"
@@ -22,6 +21,7 @@ require "fugit/main_frame"
 require "fugit/merge_dialog"
 require "fugit/messages"
 require "fugit/push_dialog"
+require "fugit/tab_toolbar"
 
 
 version = File.exist?(File.join(File.dirname(__FILE__), "..", ".git")) ? "Developer's alpha" : Gem.searcher.find("fugit").version.to_s rescue "Unknown"

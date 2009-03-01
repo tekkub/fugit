@@ -2,27 +2,29 @@ include Wx
 include IconLoader
 
 module Fugit
-	class CommitTabToolbar < ToolBar
-		def initialize(parent)
+	class TabToolbar < ToolBar
+		def initialize(parent, is_commit_bar = true)
 			super(parent, ID_ANY, nil, nil, TB_HORIZONTAL|NO_BORDER|TB_NODIVIDER)
 
 			self.set_tool_bitmap_size(Size.new(16,16))
 
-			stage_all_button = self.add_tool(ID_ANY, "Stage all", get_icon("folder_add.png"), "Stage all")
-			evt_tool(stage_all_button, :on_stage_all_clicked)
+			if is_commit_bar
+				stage_all_button = self.add_tool(ID_ANY, "Stage all", get_icon("folder_add.png"), "Stage all")
+				evt_tool(stage_all_button, :on_stage_all_clicked)
 
-			stage_button = self.add_tool(ID_ANY, "Stage", get_icon("page_add.png"), "Stage changed files")
-			evt_tool(stage_button, :on_stage_changed_clicked)
+				stage_button = self.add_tool(ID_ANY, "Stage", get_icon("page_add.png"), "Stage changed files")
+				evt_tool(stage_button, :on_stage_changed_clicked)
 
-			unstage_all_button = self.add_tool(ID_ANY, "Unstage all", get_icon("folder_delete.png"), "Unstage all")
-			evt_tool(unstage_all_button, :on_unstage_all_clicked)
+				unstage_all_button = self.add_tool(ID_ANY, "Unstage all", get_icon("folder_delete.png"), "Unstage all")
+				evt_tool(unstage_all_button, :on_unstage_all_clicked)
 
-			self.add_separator
+				self.add_separator
 
-			commit = self.add_tool(ID_ANY, "Commit", get_icon("disk.png"), "Commit")
-			evt_tool(commit, :on_commit_clicked)
+				commit = self.add_tool(ID_ANY, "Commit", get_icon("disk.png"), "Commit")
+				evt_tool(commit, :on_commit_clicked)
 
-			self.add_separator
+				self.add_separator
+			end
 
 			push = self.add_tool(ID_ANY, "Push", get_icon("page_up.gif"), "Push")
 			evt_tool(push, :on_push_clicked)
