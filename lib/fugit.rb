@@ -19,6 +19,7 @@ require "fugit/index_list"
 require "fugit/io_get_line"
 require "fugit/logged_dialog"
 require "fugit/main_frame"
+require "fugit/merge_dialog"
 require "fugit/messages"
 require "fugit/push_dialog"
 

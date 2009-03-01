@@ -37,7 +37,7 @@ module Fugit
 			evt_choice(@branch, :on_branch_choice)
 
 			merge_branch_button = self.add_tool(ID_ANY, "Merge branch", get_icon("arrow_join.png"), "Merge branch")
-			self.enable_tool(merge_branch_button.get_id, false)
+			evt_tool(merge_branch_button, :on_merge_branch_clicked)
 
 			delete_branch_button = self.add_tool(ID_ANY, "Delete branch", get_icon("arrow_divide_delete.png"), "Delete branch")
 			evt_tool(delete_branch_button, :on_delete_branch_clicked)
@@ -110,6 +110,11 @@ module Fugit
 		def on_delete_branch_clicked
 			@delete_branch_dialog ||= DeleteBranchDialog.new(self)
 			@delete_branch_dialog.show
+		end
+
+		def on_merge_branch_clicked
+			@merge_branch_dialog ||= MergeDialog.new(self)
+			@merge_branch_dialog.show
 		end
 
 	end
