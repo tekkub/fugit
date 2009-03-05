@@ -2,6 +2,7 @@
 $:.unshift File.dirname(__FILE__)
 
 require 'wx'
+require "grit/lib/grit"
 
 require "fugit/icon_loader"
 
