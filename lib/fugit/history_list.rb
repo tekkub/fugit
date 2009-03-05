@@ -13,7 +13,7 @@ module Fugit
 
 			@list_menu = Menu.new
 			@menu_create_branch = MenuItem.new(@list_menu, ID_ANY, 'Create new branch here')
-			@menu_create_branch.set_bitmap(get_icon("arrow_divide.png"))
+			@menu_create_branch.set_bitmap(get_icon("arrow_divide_add.png"))
 			@list_menu.append_item(@menu_create_branch)
 			evt_menu(@menu_create_branch, :on_menu_create_branch)
 
@@ -43,6 +43,8 @@ module Fugit
 
 			register_for_message(:history_tab_shown, :update_list)
 			register_for_message(:tab_switch, :update_list)
+			register_for_message(:branch_created, :update_list)
+			register_for_message(:branch_deleted, :update_list)
 			register_for_message(:refresh, :update_list)
 			register_for_message(:exiting) {self.hide} # Things seem to run smoother if we hide before destruction
 		end
@@ -98,16 +100,8 @@ module Fugit
 		end
 
 		def on_menu_create_branch(event)
-			@new_branch_dialog ||= TextEntryDialog.new(self, "New branch name:", "Create branch")
-			@new_branch_dialog.set_value("")
-			if @new_branch_dialog.show_modal == ID_OK
-				err = `git branch #{@new_branch_dialog.get_value} #{@menu_data} 2>&1`
-				if err.empty?
-					send_message(:refresh)
-				else
-					MessageDialog.new(self, err, "Error creating branch", OK|ICON_ERROR).show_modal
-				end
-			end
+			@new_branch_dialog ||= CreateBranchDialog.new(self)
+			@new_branch_dialog.show(@menu_data)
 		end
 
 		def on_menu_cherry_pick(event)

@@ -38,6 +38,9 @@ module Fugit
 			set_branches
 			evt_choice(@branch, :on_branch_choice)
 
+			create_branch_button = self.add_tool(ID_ANY, "Create branch", get_icon("arrow_divide_add.png"), "Create branch")
+			evt_tool(create_branch_button, :on_create_branch_clicked)
+
 			merge_branch_button = self.add_tool(ID_ANY, "Merge branch", get_icon("arrow_join.png"), "Merge branch")
 			evt_tool(merge_branch_button, :on_merge_branch_clicked)
 
@@ -47,6 +50,7 @@ module Fugit
 			self.realize
 
 			register_for_message(:tab_switch, :update_tools)
+			register_for_message(:branch_created, :update_tools)
 			register_for_message(:branch_deleted, :update_tools)
 			register_for_message(:refresh, :update_tools)
 			register_for_message(:save_clicked, :on_commit_clicked)
@@ -107,6 +111,11 @@ module Fugit
 				current = branches.match(/\* (.+)/).to_a.last
 				@branch.set_string_selection(current) if current
 			end
+		end
+
+		def on_create_branch_clicked
+			@create_branch_dialog ||= CreateBranchDialog.new(self)
+			@create_branch_dialog.show
 		end
 
 		def on_delete_branch_clicked
