@@ -100,8 +100,8 @@ module Fugit
 
 		def on_branch_choice(event)
 			branch = @branch.get_string(event.get_selection)
-			err = `git checkout #{branch} 2>&1`
-			if err =~ /Switched to branch "#{branch}"/
+			success, err = repo.checkout(branch)
+			if success
 				send_message(:branch_checkout)
 			else
 				MessageDialog.new(self, err, "Branch checkout error", OK|ICON_ERROR).show_modal

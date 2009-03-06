@@ -85,6 +85,15 @@ module Grit
     end
 
 
+    # Check out a branch
+    #
+    # Returns true/false if success, error message
+    def checkout(branch)
+      self.git.checkout({}, branch)
+      [self.git.last_status.success?, self.git.last_err]
+    end
+    
+
     # Commits current index
     #
     # Returns true/false if commit worked

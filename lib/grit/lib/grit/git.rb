@@ -33,7 +33,7 @@ module Grit
       Grit::Git.git_timeout = old_timeout
     end
     
-    attr_accessor :git_dir, :bytes_read
+    attr_accessor :git_dir, :bytes_read, :last_err, :last_status
     
     def initialize(git_dir)
       self.git_dir    = git_dir
@@ -66,6 +66,8 @@ module Grit
       response, err = timeout ? sh(call) : wild_sh(call)
       Grit.log(response) if Grit.debug
       Grit.log(err) if Grit.debug
+      self.last_err = err
+      self.last_status = $?
       response
     end
 
