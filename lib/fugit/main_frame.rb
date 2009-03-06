@@ -1,6 +1,19 @@
 include Wx
 include IconLoader
 
+module Wx
+	class EvtHandler
+		def repo
+			@@repo
+		end
+
+		def repo=(val)
+			@@repo = val
+		end
+	end
+end
+
+
 module Fugit
 	class MainFrame < Frame
 		def initialize(title, version)
@@ -8,6 +21,8 @@ module Fugit
 			super(nil, :title => "#{pwd} - #{title}#{version == "Developer's alpha" ? " ~~ALPHA~~" : ""}", :size => [ 800, 600 ])
 
 			@app_verion = version
+
+			self.repo = Grit::Repo.new(Dir.pwd)
 
 			@notebook = Notebook.new(self, ID_ANY, :style => FULL_REPAINT_ON_RESIZE)
 			@commit_panel = CommitTab.new(@notebook)

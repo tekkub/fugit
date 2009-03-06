@@ -63,11 +63,9 @@ module Fugit
 		end
 
 		def set_branches
-			branches = `git branch`
-			current = branches.match(/\* (.+)/).to_a.last
 			@branch.clear
-			branches.split("\n").each {|b| @branch.append(b.split(" ").last)}
-			@branch.set_string_selection(current) if current
+			repo.branches.each {|b| @branch.append(b.name)}
+			@branch.set_string_selection(repo.head.name)
 		end
 
 		def on_stage_all_clicked(event)
@@ -107,9 +105,7 @@ module Fugit
 				send_message(:branch_checkout)
 			else
 				MessageDialog.new(self, err, "Branch checkout error", OK|ICON_ERROR).show_modal
-				branches = `git branch`
-				current = branches.match(/\* (.+)/).to_a.last
-				@branch.set_string_selection(current) if current
+				@branch.set_string_selection(repo.head.name)
 			end
 		end
 
