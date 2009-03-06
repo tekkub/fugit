@@ -18,7 +18,12 @@ module Grit
       attr_accessor :git_binary, :git_timeout
     end
   
-    self.git_binary  = "/usr/bin/env git"
+    self.git_binary = case RUBY_PLATFORM
+      when /mswin|mingw/
+        "c:/Program Files/Git/bin/git.exe"
+      else
+        "/usr/bin/env git"
+      end
     self.git_timeout = 10
     
     def self.with_timeout(timeout = 10.seconds)
@@ -54,9 +59,9 @@ module Grit
       timeout  = true if timeout.nil?
 
       opt_args = transform_options(options)
-      ext_args = args.reject { |a| a.empty? }.map { |a| (a == '--' || a[0].chr == '|') ? a : "'#{a}'" }
+      ext_args = args.reject { |a| a.empty? }.map { |a| (a == '--' || a[0].chr == '|') ? a : %Q|"#{a}"| }
 
-      call = "#{prefix}#{Git.git_binary} --git-dir='#{self.git_dir}' #{cmd.to_s.gsub(/_/, '-')} #{(opt_args + ext_args).join(' ')}#{postfix}"
+      call = %Q|#{prefix}#{Git.git_binary} --git-dir="#{self.git_dir}" #{cmd.to_s.gsub(/_/, '-')} #{(opt_args + ext_args).join(' ')}#{postfix}|
       Grit.log(call) if Grit.debug
       response, err = timeout ? sh(call) : wild_sh(call)
       Grit.log(response) if Grit.debug
