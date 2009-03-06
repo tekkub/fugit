@@ -69,17 +69,17 @@ module Fugit
 		end
 
 		def on_stage_all_clicked(event)
-			`git add --all 2>&1`
+			repo.add_all
 			send_message(:index_changed)
 		end
 
 		def on_stage_changed_clicked(event)
-			`git add --update 2>&1`
+			repo.add_updated
 			send_message(:index_changed)
 		end
 
 		def on_unstage_all_clicked(event)
-			`git reset 2>&1`
+			repo.reset_all
 			send_message(:index_changed)
 		end
 

@@ -104,11 +104,28 @@ module Grit
       self.git.add({}, *files.flatten)
     end
 
+    # Adds changed, tracked files to the index
+    def add_updated
+      self.git.add({:update => true})
+    end
+
+    # Adds all files to the index
+    def add_all
+      self.git.add({:all => true})
+    end
+
     # Remove files from the index
+    # delete from working copy, stage the file to be removed on commit
     def remove(*files)
       self.git.rm({}, *files.flatten)
     end
     
+    # Unstage files from the index
+    # remove from index, but not from working copy
+    def reset_all
+      self.git.reset
+    end
+
 
     def blame_tree(commit, path = nil)
       commit_array = self.git.blame_tree(commit, path)
