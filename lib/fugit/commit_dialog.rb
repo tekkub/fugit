@@ -40,10 +40,9 @@ module Fugit
 		end
 
 		def show_modal
-			name = `git config user.name`
-			email = `git config user.email`
-			@committer.set_value("#{name.chomp} <#{email.chomp}>")
-			@author.set_value("#{name.chomp} <#{email.chomp}>")
+			user = "#{repo.config["user.name"]} <#{repo.config["user.email"]}>"
+			@committer.set_value(user)
+			@author.set_value(user)
 			@input.set_value("")
 			@amend_check.set_value(false)
 			@input.set_focus
@@ -68,11 +67,9 @@ module Fugit
 				@no_msg_error ||= MessageDialog.new(self, "Please enter a commit message.", "Commit error", OK|ICON_ERROR)
 				@no_msg_error.show_modal
 			else
-				commit_file = File.join(Dir.pwd, ".git", "fugit_commit.txt")
-				File.open(commit_file, "w") {|f| f << msg}
-				amend = @amend_check.is_checked ? "--amend " : ""
-				`git commit #{amend}--file=.git/fugit_commit.txt --author="#{@author.get_value}"`
-				File.delete(commit_file)
+				vals = {:author => %Q|"#{@author.get_value}"|}
+				vals[:amend] = true if @amend_check.is_checked
+				repo.git.commit(vals, '-m', msg.gsub('"', '\"'))
 				end_modal ID_OK
 			end
 		end
