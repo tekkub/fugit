@@ -24,6 +24,11 @@ module Fugit
 
 			@list_menu.append_separator
 
+			@menu_revert_commit = MenuItem.new(@list_menu, ID_ANY, 'Revert this commit')
+			@menu_revert_commit.set_bitmap(get_icon("cross.png"))
+			@list_menu.append_item(@menu_revert_commit)
+			evt_menu(@menu_revert_commit, :on_menu_revert_commit)
+
 			@menu_soft_reset = @list_menu.append('Soft-reset branch to here')
 			evt_menu(@menu_soft_reset, :on_menu_soft_reset)
 
@@ -111,6 +116,11 @@ module Fugit
 			else
 				send_message(:refresh)
 			end
+		end
+
+		def on_menu_revert_commit(event)
+			@revert_commit_dialog ||= RevertCommitDialog.new(self)
+			@revert_commit_dialog.show(@menu_data)
 		end
 
 		def on_menu_soft_reset(event)
