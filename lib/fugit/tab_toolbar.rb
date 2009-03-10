@@ -22,9 +22,12 @@ module Fugit
 
 				commit = self.add_tool(ID_ANY, "Commit", get_icon("disk.png"), "Commit")
 				evt_tool(commit, :on_commit_clicked)
-
-				self.add_separator
 			end
+
+			refresh = self.add_tool(ID_ANY, "Refresh", get_icon("arrow_refresh.png"), "Refresh")
+			evt_tool(refresh, :on_refresh_clicked)
+
+			self.add_separator
 
 			push = self.add_tool(ID_ANY, "Push", get_icon("page_up.gif"), "Push")
 			evt_tool(push, :on_push_clicked)
@@ -86,6 +89,10 @@ module Fugit
 		def on_commit_clicked
 			@commit_dialog ||= CommitDialog.new(self)
 			send_message(:commit_saved) if @commit_dialog.show_modal == ID_OK
+		end
+
+		def on_refresh_clicked
+			send_message(:refresh)
 		end
 
 		def on_push_clicked
