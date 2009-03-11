@@ -50,6 +50,11 @@ module Fugit
 			delete_branch_button = self.add_tool(ID_ANY, "Delete branch", get_icon("arrow_divide_delete.png"), "Delete branch")
 			evt_tool(delete_branch_button, :on_delete_branch_clicked)
 
+			self.add_separator
+
+			run_command_button = self.add_tool(ID_ANY, "Run command", get_icon("application_go.png"), "Run command")
+			evt_tool(run_command_button, :on_run_command_clicked)
+
 			self.realize
 
 			register_for_message(:tab_switch, :update_tools)
@@ -129,6 +134,11 @@ module Fugit
 		def on_merge_branch_clicked
 			@merge_branch_dialog ||= MergeDialog.new(self)
 			@merge_branch_dialog.show
+		end
+
+		def on_run_command_clicked
+			@run_command_dialog ||= RunCommandDialog.new(self)
+			@run_command_dialog.show
 		end
 
 	end

@@ -24,6 +24,7 @@ require "fugit/merge_dialog"
 require "fugit/messages"
 require "fugit/push_dialog"
 require "fugit/revert_commit_dialog"
+require "fugit/run_command_dialog"
 require "fugit/tab_toolbar"
 
 
