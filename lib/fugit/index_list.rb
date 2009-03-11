@@ -46,7 +46,7 @@ module Fugit
 			register_for_message(:branch_checkout) {update_tree if is_shown_on_screen}
 			register_for_message(:commit_saved, :update_tree)
 			register_for_message(:index_changed, :update_tree)
-			register_for_message(:tab_changed, :update_tree)
+			register_for_message(:tab_switch, :update_tree)
 			register_for_message(:exiting) {self.hide} # Things seem to run smoother if we hide before destruction
 
 			update_tree
