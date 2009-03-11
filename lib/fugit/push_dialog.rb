@@ -50,7 +50,7 @@ module Fugit
 			remote = @remote.get_value
 			command = "git push #{tags}#{force}#{remote} #{branches.join(" ")}"
 
-			self.end_modal(ID_OK)
+			end_modal(ID_OK)
 
 			@log_dialog ||= LoggedDialog.new(self, "Pushing branches")
 			@log_dialog.show
