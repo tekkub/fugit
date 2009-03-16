@@ -8,6 +8,8 @@ module Fugit
 			@remotes = CheckListBox.new(self, ID_ANY)
 			@tag_check = CheckBox.new(self, ID_ANY)
 			@tag_check.set_label("Include &tags")
+			@prune_check = CheckBox.new(self, ID_ANY)
+			@prune_check.set_label("&Prune deleted branches")
 
 			butt_sizer = create_button_sizer(OK|CANCEL)
 			butt_sizer.get_children.map {|s| s.get_window}.compact.each {|b| b.set_label(b.get_label == "OK" ? "Fetch" : "Close")}
@@ -17,6 +19,7 @@ module Fugit
 			box.add(StaticText.new(self, ID_ANY, "Fetch from:"), 0, EXPAND|ALL, 4)
 			box.add(@remotes, 1, EXPAND|LEFT|RIGHT|BOTTOM, 4)
 			box.add(@tag_check, 0, EXPAND|LEFT|RIGHT|BOTTOM, 4)
+			box.add(@prune_check, 0, EXPAND|LEFT|RIGHT|BOTTOM, 4)
 			box.add(butt_sizer, 0, EXPAND|BOTTOM, 4)
 
 			self.set_sizer(box)
@@ -28,6 +31,7 @@ module Fugit
 			@remotes.set(remotes)
 			@remotes.check(@remotes.find_string("origin")) if remotes.include?("origin")
 			@tag_check.set_value(true)
+			@prune_check.set_value(false)
 
 			super
 		end
@@ -40,7 +44,8 @@ module Fugit
 
 			@log_dialog ||= LoggedDialog.new(self, "Fetching remotes")
 			@log_dialog.show
-			remotes.each {|remote| @log_dialog.run_command("git fetch #{tags}#{remote}", remote == remotes.last)}
+			remotes.each {|remote| @log_dialog.run_command("git fetch #{tags}#{remote}", remote == remotes.last && !@prune_check.is_checked)}
+			remotes.each {|remote| @log_dialog.run_command("git remote prune #{remote}", remote == remotes.last)} if @prune_check.is_checked
 		end
 
 	end
