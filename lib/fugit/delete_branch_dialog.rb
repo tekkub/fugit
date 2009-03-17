@@ -34,7 +34,7 @@ module Fugit
 			branches = @branch_list.get_checked_items.map {|i| @branch_list.get_string(i)}
 			unless (unmerged_to_delete = branches.reject {|b| !unmerged.include?(b)}).empty?
 				dialog = MessageDialog.new(self, "These branches are not merged into the current HEAD:\n    #{unmerged_to_delete.join("\n    ")}\n\nDeleting them may cause data loss, continue?",
-					"Unmerged branches", YES_NO|NO_DEFAULT|ICON_EXCLAMATION)
+					"Unmerged branches", YES_NO|ICON_EXCLAMATION)
 				return if dialog.show_modal != ID_YES
 			end
 			`git branch -D #{branches.join(" ")} 2>&1`

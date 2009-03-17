@@ -143,7 +143,7 @@ module Fugit
 
 		def on_menu_hard_reset(event)
 			if has_uncomitted_changes?
-				@uncomitted_hard_dialog ||= MessageDialog.new(self, "Uncommitted changes will be lost, continue?", "Uncomitted changes", YES_NO|NO_DEFAULT|ICON_EXCLAMATION)
+				@uncomitted_hard_dialog ||= MessageDialog.new(self, "Uncommitted changes will be lost, continue?", "Uncomitted changes", YES_NO|ICON_EXCLAMATION)
 				return if @uncomitted_hard_dialog.show_modal != ID_YES
 			end
 

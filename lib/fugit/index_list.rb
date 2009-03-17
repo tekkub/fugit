@@ -168,7 +168,7 @@ module Fugit
 		end
 
 		def on_menu_revert_changes(event)
-			@confirm_revert ||= MessageDialog.new(self, "Are you sure you want to revert these changes?\nThe changes will be lost, this cannot be undone.", "Confirm revert", NO_DEFAULT|YES_NO|ICON_EXCLAMATION)
+			@confirm_revert ||= MessageDialog.new(self, "Are you sure you want to revert these changes?\nThe changes will be lost, this cannot be undone.", "Confirm revert", YES_NO|ICON_EXCLAMATION)
 
 			if @confirm_revert.show_modal == ID_YES
 				diff = `git diff -- "#{@menu_data[0]}"`
