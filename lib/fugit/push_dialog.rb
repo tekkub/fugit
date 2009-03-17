@@ -39,6 +39,8 @@ module Fugit
 			branches = branches.split("\n").map {|b| b.split(" ").last}
 			@branch_list.set(branches)
 			@branch_list.check(@branch_list.find_string(current)) if current
+			@tag_check.set_value(false)
+			@force_check.set_value(false)
 
 			super
 		end
