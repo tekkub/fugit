@@ -36,7 +36,7 @@ module Fugit
 		end
 
 		def show
-			branches = `git branch --no-merged`
+			branches = `git branch -a --no-merged`
 			branches = branches.split("\n").map {|b| b.strip}
 			@branch_list.set(branches)
 
