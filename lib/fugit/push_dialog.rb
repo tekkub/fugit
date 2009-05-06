@@ -13,7 +13,6 @@ module Fugit
 			@remote = ComboBox.new(self, ID_ANY)
 
 			butt_sizer = create_button_sizer(OK|CANCEL)
-			butt_sizer.get_children.map {|s| s.get_window}.compact.each {|b| b.set_label(b.get_label == "OK" ? "Push" : "Close")}
 			evt_button(get_affirmative_id, :on_ok)
 
 			box = BoxSizer.new(VERTICAL)

@@ -12,7 +12,6 @@ module Fugit
 			@prune_check.set_label("&Prune deleted branches")
 
 			butt_sizer = create_button_sizer(OK|CANCEL)
-			butt_sizer.get_children.map {|s| s.get_window}.compact.each {|b| b.set_label(b.get_label == "OK" ? "Fetch" : "Close")}
 			evt_button(get_affirmative_id, :on_ok)
 
 			box = BoxSizer.new(VERTICAL)
