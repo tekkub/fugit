@@ -23,10 +23,16 @@ Gem::Specification.new do |s|
 
     if current_version >= 3 then
       s.add_runtime_dependency(%q<wxruby>, [">= 1.9.9"])
+      s.add_runtime_dependency(%q<mime-types>, [">= 1.15"])
+      s.add_runtime_dependency(%q<diff-lcs>, [">= 1.1.2"])
     else
       s.add_dependency(%q<wxruby>, [">= 1.9.9"])
+      s.add_dependency(%q<mime-types>, [">= 1.15"])
+      s.add_dependency(%q<diff-lcs>, [">= 1.1.2"])
     end
   else
     s.add_dependency(%q<wxruby>, [">= 1.9.9"])
+    s.add_dependency(%q<mime-types>, [">= 1.15"])
+    s.add_dependency(%q<diff-lcs>, [">= 1.1.2"])
   end
 end
