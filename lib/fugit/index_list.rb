@@ -139,8 +139,12 @@ module Fugit
 			when :unstaged
 				case change
 				when :new
-					val = File.read(file)
-					send_message(:diff_raw, val)
+				  if File.directory?(file)
+				    send_message(:diff_raw, "Git repo\n\nNote that staging with fugit will stage the files inside the repo,\nit will *not* add a git-submodule.")
+			    else
+					  val = File.read(file)
+					  send_message(:diff_raw, val)
+					end
 				when :modified, :deleted
 					val = `git diff -- "#{file}"`
 					send_message(:diff_set, val, :unstaged)
