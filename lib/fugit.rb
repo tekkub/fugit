@@ -1,6 +1,8 @@
 
 $:.unshift File.dirname(__FILE__)
 
+require "rubygems"
+
 require 'wx'
 require "grit/lib/grit"
 
