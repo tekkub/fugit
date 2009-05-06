@@ -72,6 +72,8 @@ module Fugit
 				destroy
 				exit
 			end
+
+			self.accelerator_table = AcceleratorTable.new(AcceleratorEntry.new(MOD_CMD, ?w, ID_EXIT))
 		end
 
 		def setup_working_directory

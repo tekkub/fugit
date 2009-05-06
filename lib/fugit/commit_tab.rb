@@ -21,8 +21,6 @@ module Fugit
 			box.add_spacer(3)
 			box.add(@vsplitter, 1, EXPAND)
 			self.set_sizer(box)
-
-			self.accelerator_table = AcceleratorTable.new(AcceleratorEntry.new(MOD_CMD, ?w, ID_EXIT))
 		end
 	end
 end
