@@ -30,6 +30,15 @@ require "fugit/run_command_dialog"
 require "fugit/tab_toolbar"
 
 
+unless Wx::MenuItem.method_defined?("set_bitmap")
+  module Wx
+    class MenuItem
+      def set_bitmap(a=nil)
+      end
+    end
+  end
+end
+
 version = File.exist?(File.join(File.dirname(__FILE__), "..", ".git")) ? "Developer's alpha" : Gem.searcher.find("fugit").version.to_s rescue "Unknown"
 
 Wx::App.run do
