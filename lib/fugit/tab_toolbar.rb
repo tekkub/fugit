@@ -59,6 +59,7 @@ module Fugit
 
 			register_for_message(:tab_switch, :update_tools)
 			register_for_message(:branch_created, :update_tools)
+			register_for_message(:branch_checkout, :update_tools)
 			register_for_message(:branch_deleted, :update_tools)
 			register_for_message(:refresh, :update_tools)
 			register_for_message(:save_clicked, :on_commit_clicked)

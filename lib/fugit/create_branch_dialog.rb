@@ -3,14 +3,18 @@ include Wx
 module Fugit
 	class CreateBranchDialog < Dialog
 		def initialize(parent)
-			super(parent, ID_ANY, "Create branch", :size => Size.new(300, 165))
+			super(parent, ID_ANY, "Create branch", :size => Size.new(300, 185))
 
 			@name = TextCtrl.new(self, ID_ANY)
 			@refs = ComboBox.new(self, ID_ANY)
 
-			@force_check = CheckBox.new(self, ID_ANY)
-			@force_check.set_label("&Force")
-			@force_check.set_tool_tip("Force the creation of a new branch even if it means deleting\na branch that already exists with the same name.")
+      @force_check = CheckBox.new(self, ID_ANY)
+      @force_check.set_label("&Force")
+      @force_check.set_tool_tip("Force the creation of a new branch even if it means deleting\na branch that already exists with the same name.")
+
+      @checkout_check = CheckBox.new(self, ID_ANY)
+      @checkout_check.set_label("&Checkout")
+      @checkout_check.set_tool_tip("Checkout branch after creation.")
 
 			butt_sizer = create_button_sizer(OK|CANCEL)
 			butt_sizer.get_children.map {|s| s.get_window}.compact.each {|b| b.set_label("Create") if b.get_label == "OK"}
@@ -22,6 +26,7 @@ module Fugit
 			box.add(StaticText.new(self, ID_ANY, "Create at:"), 0, EXPAND|LEFT|RIGHT|BOTTOM, 4)
 			box.add(@refs, 0, EXPAND|LEFT|RIGHT|BOTTOM, 4)
 			box.add(@force_check, 1, EXPAND|LEFT|RIGHT|BOTTOM, 4)
+			box.add(@checkout_check, 1, EXPAND|LEFT|RIGHT|BOTTOM, 4)
 			box.add(butt_sizer, 0, EXPAND|BOTTOM, 4)
 
 			self.set_sizer(box)
@@ -54,8 +59,19 @@ module Fugit
 			err = `git branch #{force}#{name} #{ref} 2>&1`
 
 			if err.empty?
-				send_message(:branch_created)
-				end_modal(ID_OK)
+			  if @checkout_check.is_checked
+    			success, err = repo.checkout(name)
+    			if success
+    				send_message(:branch_checkout)
+  				  end_modal(ID_OK)
+    			else
+    				MessageDialog.new(self, err, "Branch checkout error", OK|ICON_ERROR).show_modal
+    				@branch.set_string_selection(repo.head.name)
+    			end
+  			else
+				  send_message(:branch_created)
+				  end_modal(ID_OK)
+		    end
 			else
 				MessageDialog.new(self, err, "Error creating branch", OK|ICON_ERROR).show_modal
 			end

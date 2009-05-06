@@ -49,6 +49,7 @@ module Fugit
 			register_for_message(:history_tab_shown, :update_list)
 			register_for_message(:tab_switch, :update_list)
 			register_for_message(:branch_created, :update_list)
+			register_for_message(:branch_checkout, :update_list)
 			register_for_message(:branch_deleted, :update_list)
 			register_for_message(:refresh, :update_list)
 			register_for_message(:exiting) {self.hide} # Things seem to run smoother if we hide before destruction
