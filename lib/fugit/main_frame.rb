@@ -48,7 +48,7 @@ module Fugit
 			# Using ID_EXIT standard id means the menu item will be given the right label for the platform and language, and placed in the correct platform-specific menu - eg on OS X, in the Application's menu
 			menu_file.append(ID_SAVE, "&Save commit\tCtrl-S", "Save commit")
 			push = menu_file.append(ID_ANY, "&Push\tCtrl-P", "Push commits to a remote repo")
-			refresh = menu_file.append(ID_ANY, "&Refresh\tF5", "Refresh the index list")
+			refresh = menu_file.append(ID_ANY, "&Refresh\tCtrl-R", "Refresh the index list")
 			menu_file.append(ID_EXIT, "E&xit", "Quit this program")
 			menu_bar.append(menu_file, "&File")
 
